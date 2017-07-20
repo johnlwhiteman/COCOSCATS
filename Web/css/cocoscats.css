@@ -1,0 +1,62 @@
+body {
+  color: #000000;
+  font-family: "Arial", "Helvetica";
+  font-size: 11px;
+  font-style: normal;
+  font-weight: normal;
+}
+
+table {
+    border-spacing: 3px;
+}
+
+td {
+    padding: 3px;
+}
+
+textarea {
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-style: normal;
+  height: 250px;
+  width: 500px;
+}
+
+.cfgName {
+  color: gray;
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  text-decoration: underline;
+}
+
+.cfgValue {
+  color: gray;
+  font-family: inherit;
+  font-size: inherit;
+  font-style: italic;
+  font-weight: inherit;
+}
+
+.errMsg {
+  color: red;
+  font-family: inherit;
+  font-size: inherit;
+  font-style: italic;
+  font-weight: inherit;
+}
+
+.okMsg {
+  color: green;
+  font-family: inherit;
+  font-size: inherit;
+  font-style: italic;
+  font-weight: inherit;
+}
+
+#navTitle {
+  font-weight: bold;
+  font-style: italic;
+}

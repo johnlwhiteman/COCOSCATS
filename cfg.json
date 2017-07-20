@@ -1,0 +1,169 @@
+{
+    "ID": "htmlfile",
+    "Browser": "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s",
+    "Host": "localhost",
+    "Port": 80,
+    "Database": "True",
+    "Workflow":
+    {
+        "Input":
+        {
+            "Plugin": "TextFile",
+            "Method": "runInput",
+            "Path": "./Demo/Simple/house.txt",
+            "Edit": "True",
+            "Verbose": "False"
+        },
+        "Analyzer":
+        {
+            "Plugin": "Nltk",
+            "Method": "runSingleWords",
+            "Edit": "True",
+            "Verbose": "False"
+        },
+        "Translator":
+        {
+            "Plugin": "Azure",
+            "Method": "runTranslate",
+            "Edit": "True",
+            "Verbose": "False"
+        },
+        "Output":
+        {
+            "Plugin": "HtmlFile",
+            "Method": "runOutput",
+            "Path": "./Demo/Simple/houseTranslated.html",
+            "Edit": "True",
+            "Verbose": "False"
+        }
+    },
+    "Plugin":
+    [
+        {
+        "Name": "HtmlFile",
+        "Type": "IO",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "An IO plugin to handle simple HTML files",
+        "Method":
+        [
+            {
+                "Name": "runOutput",
+                "Params": {}
+            }
+        ]
+        },
+        {
+        "Name": "JsonFile",
+        "Type": "IO",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "An IO plugin to handle simple JSON files",
+        "Method":
+        [
+            {
+                "Name": "runOutput",
+                "Params":
+                {
+                    "EncodeWithBase64": "False"
+                }
+            }
+        ]
+        },
+        {
+        "Name": "TextFile",
+        "Type": "IO",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "An IO plugin to handle simple text files",
+        "Method":
+        [
+            {
+                "Name": "runInput",
+                "Params": {}
+            },
+            {
+                "Name": "runOutput",
+                "Params": {}
+            }
+        ]
+        },
+        {
+        "Name": "Wikipedia",
+        "Type": "IO",
+        "Version": "1.0.0",
+        "Author" : "Wikipedia and Sam Brightman",
+        "Description": "An IO plugin to interact with the Wikipedia API",
+        "Method":
+        [
+            {
+                "Name": "runSearchInput",
+                "Params":
+                {
+                    "SearchFor": "Eclipse",
+                    "IncludeContent": "False",
+                    "IncludeHeading": "True",
+                    "IncludeSummary": "True",
+                    "IncludeURL": "True",
+                    "LimitResultsTo": "5",
+                    "Locale": "en"
+                }
+            }
+        ]
+        },
+        {
+        "Name": "XmlFile",
+        "Type": "IO",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "An IO plugin to handle simple XML files",
+        "Method":
+        [
+            {
+                "Name": "runOutput",
+                "Params": {}
+            }
+        ]
+        },
+        {
+        "Name": "Nltk",
+        "Type": "Analyzer",
+        "Version": "1.0.0",
+        "Author" : "NLTK",
+        "Description": "An analyzer plugin that uses the NLTK library",
+        "Method":
+        [
+            {
+                "Name": "runSingleWords",
+                "Params":
+                {
+                    "MinCharLength": "2",
+                    "Percentage": "25",
+                    "POS": ["ADJ", "CONJ", "NOUN", "PRON", "VERB"]
+                }
+            }
+        ]
+        },
+        {
+        "Name": "Azure",
+        "Type": "Translator",
+        "Version": "1.0.0",
+        "Author" : "Microsoft",
+        "Description": "A translation plugin that uses Microsoft's Azure Cloud Translator",
+        "Method":
+        [
+            {
+                "Name": "runTranslate",
+                "Params":
+                {
+                    "AccessKey": "",
+                    "ClientID": "",
+                    "L1": "en",
+                    "L2": "id",
+                    "SearchOneByOne": "False"
+                }
+            }
+        ]
+        }
+    ]
+}
