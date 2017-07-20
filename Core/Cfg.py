@@ -2,6 +2,7 @@ import glob
 import inspect
 import json
 import os
+import re
 import sys
 from pprint import pprint
 from Core.Error import Error
@@ -93,6 +94,13 @@ class Cfg(object):
 
     def verifyCfg(self):
         for name, value in self.cfg.items():
+            if name == "ProjectID":
+                if len(value) > 256 or Text.isNothing(value):
+                    Error.raiseException(
+                    "ProjectID can only be 256 characters or less: {0}".format(value))
+                if re.search(r'[^A-Za-z0-9_\-\\]', value):
+                    Error.raiseException(
+                    "ProjectID contains invalid characters: {0}".format(value))
             if Text.isNothing(value):
                 Error.raiseException(
                 "Missing '{0}' value in {1}".format(name, self.cfgPath))

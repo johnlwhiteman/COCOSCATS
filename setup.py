@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name = "COCOSCATS",
-    packages = ["", "Core", "Plugin"],
+    packages = ["Core", "Plugin"],
     version = "1.0.0",
     description = "A Grammar-Free Natural Language Learning Content Generation and Insertion Framework",
     long_description = "This is a semi-automated framework that generates contextually correct content for people teaching/learning a second language.",
@@ -25,7 +25,7 @@ setup(
         "Topic :: Education",
         "Topic :: Text Processing"
     ],
-    install_requires = ["BingTranslator", "bottle", "nltk", "numpy", "wikiapi"],
+    install_requires = ["BingTranslator", "bottle", "nltk", "numpy", "pony", "wikiapi"],
     package_data = {"":["README.md"]}
 )
 nltk.download("averaged_perceptron_tagger")

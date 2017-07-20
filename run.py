@@ -1,10 +1,10 @@
 import argparse
 import os
 import sys
+from Core.Cli import Cli
 from Core.Cocoscats import Cocoscats
-from Core.Error import Error
-from Core.Cmd import Cmd
 from Core.Database import Database
+from Core.Error import Error
 from Core.Msg import Msg
 from Core.Web import Web
 
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--cfg", metavar="'cfg'", type=str,
                         default=cfgPath,
                         help="JSON configuration file")
-    parser.add_argument("-C", "--cmd",
+    parser.add_argument("-C", "--cli",
                         action="store_true",
                         help="Run in command line mode")
     parser.add_argument("-W", "--web",
@@ -31,12 +31,14 @@ if __name__ == "__main__":
     try:
         cocoscats = Cocoscats()
         cocoscats.initialize(cfgPath)
-        if args.cmd:
-            Cmd.run(cocoscats)
+        if args.cli:
+            pass
+            #Cli.run(cocoscats)
         elif args.web:
-            Web.run(cocoscats)
+            pass
+            #Web.run(cocoscats)
         else:
-            Error.handleError("You must specify either -C or -W mode to run", True)
+            Error.handleError("You must specify either -C or -W to run in cli or web mode respectively", True)
     except Exception as e:
         Error.handleException(e, True)
     Msg.show("Script Completed")

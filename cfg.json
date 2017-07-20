@@ -1,5 +1,6 @@
 {
-    "ID": "htmlfile",
+    "ProjectID": "htmlfile",
+    "Description": "John's Goodness goes here",
     "Browser": "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s",
     "Host": "localhost",
     "Port": 80,
@@ -10,30 +11,30 @@
         {
             "Plugin": "TextFile",
             "Method": "runInput",
-            "Path": "./Demo/Simple/house.txt",
-            "Edit": "True",
+            "Source": "./Demo/Simple/house.txt",
+            "Edit": "False",
             "Verbose": "False"
         },
         "Analyzer":
         {
             "Plugin": "Nltk",
             "Method": "runSingleWords",
-            "Edit": "True",
+            "Edit": "False",
             "Verbose": "False"
         },
         "Translator":
         {
             "Plugin": "Azure",
             "Method": "runTranslate",
-            "Edit": "True",
+            "Edit": "False",
             "Verbose": "False"
         },
         "Output":
         {
             "Plugin": "HtmlFile",
             "Method": "runOutput",
-            "Path": "./Demo/Simple/houseTranslated.html",
-            "Edit": "True",
+            "Source": "./Demo/Simple/houseTranslated.html",
+            "Edit": "False",
             "Verbose": "False"
         }
     },
