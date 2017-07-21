@@ -5,6 +5,7 @@ from Core.Cli import Cli
 from Core.Cocoscats import Cocoscats
 from Core.Database import Database
 from Core.Error import Error
+from Core.File import File
 from Core.Msg import Msg
 from Core.Web import Web
 
@@ -32,11 +33,9 @@ if __name__ == "__main__":
         cocoscats = Cocoscats()
         cocoscats.initialize(cfgPath)
         if args.cli:
-            pass
-            #Cli.run(cocoscats)
+            Cli.run(cocoscats)
         elif args.web:
-            pass
-            #Web.run(cocoscats)
+            Web.run(cocoscats)
         else:
             Error.handleError("You must specify either -C or -W to run in cli or web mode respectively", True)
     except Exception as e:

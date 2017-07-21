@@ -27,7 +27,6 @@ class Azure(Interface):
                 acceptedTokens.append(self.__getAnalyzerMatch(l1a, l2a, analyzerContentTokens))
             else:
                 rejectedTokens.append(self.__getAnalyzerMatch(l1a, l2a, analyzerContentTokens))
-
         content = """[VOCABULARY]
 {0}
 
@@ -42,7 +41,6 @@ class Azure(Interface):
 """.format(
 "\n".join(acceptedTokens), "\n".join(rejectedTokens),
 inputContent, translatedInputContent)
-
         self.setTranslatorContent(content)
         return content
 
@@ -172,6 +170,6 @@ inputContent, translatedInputContent)
                 translatedAnalyzerTokensStr = self.__getTranslatedAnalyzerTokensStr(analyzerTokensStr, accessToken)
             else:
                 translatedAnalyzerTokensStr = self.__getTranslatedAnalyzerTokensStrOneByOne(analyzerTokensStr, accessToken)
-            self.__chaffAndLog(inputContent, translatedInputContent, analyzerContent, analyzerTokensStr, translatedAnalyzerTokensStr)
+            return self.__chaffAndLog(inputContent, translatedInputContent, analyzerContent, analyzerTokensStr, translatedAnalyzerTokensStr)
         except Exception as e:
             self.raiseException(e)

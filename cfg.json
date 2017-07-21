@@ -1,10 +1,12 @@
 {
-    "ProjectID": "htmlfile",
+    "ProjectID": "WebDude",
     "Description": "John's Goodness goes here",
     "Browser": "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s",
     "Host": "localhost",
     "Port": 80,
-    "Database": "True",
+    "Database": "Cocoscats",
+    "DatabaseEnable": "True",
+    "DatabaseVerbose": "False",
     "Workflow":
     {
         "Input":
@@ -33,7 +35,7 @@
         {
             "Plugin": "HtmlFile",
             "Method": "runOutput",
-            "Source": "./Demo/Simple/houseTranslated.html",
+            "Target": "./Demo/Simple/houseTranslated.html",
             "Edit": "False",
             "Verbose": "False"
         }

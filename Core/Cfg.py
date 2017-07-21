@@ -55,6 +55,21 @@ class Cfg(object):
             return """{"Methods:":[]}"""
         return json.loads(json.dumps({"Method": methods}))
 
+    def getWorkflow(self):
+        return self.cfg["Workflow"]
+
+    def getWorkflowInputSource(self):
+        source = self.getWorkflowPlugin("Input")["Source"]
+        if source is None or source.strip() == "":
+            return None
+        return source
+
+    def getWorkflowOutputTarget(self):
+        target = self.getWorkflowPlugin("Output")["Target"]
+        if target is None or target.strip() == "":
+            return None
+        return target
+
     def getWorkflowPlugin(self, pluginType):
         plugin = self.cfg["Workflow"][pluginType]
         plugin["Type"] = pluginType
@@ -94,13 +109,13 @@ class Cfg(object):
 
     def verifyCfg(self):
         for name, value in self.cfg.items():
-            if name == "ProjectID":
+            if name == "ProjectID" or name == "Database":
                 if len(value) > 256 or Text.isNothing(value):
                     Error.raiseException(
-                    "ProjectID can only be 256 characters or less: {0}".format(value))
+                    "{0} can only be 256 characters or less: {1}".format(name, value))
                 if re.search(r'[^A-Za-z0-9_\-\\]', value):
                     Error.raiseException(
-                    "ProjectID contains invalid characters: {0}".format(value))
+                    "{0} contains invalid characters: {1}".format(name, value))
             if Text.isNothing(value):
                 Error.raiseException(
                 "Missing '{0}' value in {1}".format(name, self.cfgPath))

@@ -10,6 +10,7 @@ from Core.Database import Database
 from Core.Error import Error
 from Core.File import File
 from Core.Msg import Msg
+from Core.Text import Text
 
 class Cocoscats(Cfg):
 
@@ -22,7 +23,7 @@ class Cocoscats(Cfg):
             "analyzerPath": None,
             "translatorPath": None,
             "outputPath": None,
-            "sessionTimestamp": None
+            "dateTime": None
         }
 
     def __callPluginMethod(self, pluginType, workflowPluginParams, frameworkParams):
@@ -49,18 +50,6 @@ class Cocoscats(Cfg):
                     pluginMethod, str(e)), True)
         return method
 
-    def getWorkflowInputPath(self):
-        path = self.getWorkflowPlugin("Input")["Source"]
-        if path is None or path.strip() == "":
-            return None
-        return path
-
-    def getWorkflowOutputPath(self):
-        path = self.getWorkflowPlugin("Output")["Source"]
-        if path is None or path.strip() == "":
-            return None
-        return path
-
     def initialize(self, cfgPath):
         super(Cocoscats, self).load(cfgPath)
         self.frameworkParams["dataDir"] = "{0}/Data/{1}".format(self.installDir, self.cfg["ProjectID"])
@@ -71,8 +60,9 @@ class Cocoscats(Cfg):
         self.frameworkParams["translatorPath"] = "{0}/translator.txt".format(self.frameworkParams["dataDir"])
         self.frameworkParams["outputPath"] = "{0}/output.txt".format(self.frameworkParams["dataDir"])
         self.frameworkParams["dateTime"] = datetime.datetime.now().isoformat()
+        Database.setName(self.cfg["Database"])
         if not Database.exists():
-            Database.create()
+            Database.create(True)
 
     def purgeContent(self):
         self.purgeContentByTypes(["originalPath", "inputPath", "analyzerPath", "translatorPath", "outputPath"])
@@ -86,6 +76,57 @@ class Cocoscats(Cfg):
         content = self.__callPluginMethod("Analyzer", self.getWorkflowPlugin("Analyzer"), self.frameworkParams)
         return File.getContent(self.frameworkParams["analyzerPath"])
 
+    def runDatabase(self):
+        if not Text.isTrue(self.cfg["DatabaseEnable"]):
+            Msg.showWarning("Database is NOT enabled in {0}".format(self.cfgPath))
+            return
+        Msg.show("Execute: Database Update")
+        Database.connect()
+        Database.setVerbose(Text.toTrueOrFalse(self.cfg["DatabaseVerbose"]))
+        with Database.ORM.db_session:
+            records = Database.Table.Project.get(ID=self.cfg["ProjectID"])
+            if records is not None:
+                records.delete()
+                Database.commit()
+
+            projectTable = Database.Table.Project(
+                ID=self.cfg["ProjectID"],
+                Description=Database.sanitize(self.cfg["Description"]),
+                DateTime=self.frameworkParams["dateTime"],
+                Workflow=self.cfg["Workflow"])
+
+            inputTable = Database.Table.Input(
+                ProjectID=projectTable,
+                Content=Database.sanitize(File.getContent(self.frameworkParams["inputPath"])),
+                Source=Database.sanitize(self.cfg["Workflow"]["Input"]["Source"]),
+                PluginName=Database.sanitize(self.cfg["Workflow"]["Input"]["Plugin"]),
+                PluginMethod=Database.sanitize(self.cfg["Workflow"]["Input"]["Method"]),
+                Plugin=self.cfg["Workflow"]["Input"])
+
+            analyzerTable = Database.Table.Analyzer(
+                ProjectID=projectTable,
+                Content=Database.sanitize(File.getContent(self.frameworkParams["analyzerPath"])),
+                PluginName=Database.sanitize(self.cfg["Workflow"]["Analyzer"]["Plugin"]),
+                PluginMethod=Database.sanitize(self.cfg["Workflow"]["Analyzer"]["Method"]),
+                Plugin=self.cfg["Workflow"]["Analyzer"])
+
+            translatorTable = Database.Table.Translator(
+                ProjectID=projectTable,
+                Content=Database.sanitize(File.getContent(self.frameworkParams["translatorPath"])),
+                PluginName=Database.sanitize(self.cfg["Workflow"]["Translator"]["Plugin"]),
+                PluginMethod=Database.sanitize(self.cfg["Workflow"]["Translator"]["Method"]),
+                Plugin=self.cfg["Workflow"]["Translator"])
+
+            outputTable = Database.Table.Output(
+                ProjectID=projectTable,
+                Content=Database.sanitize(File.getContent(self.frameworkParams["outputPath"])),
+                Target=Database.sanitize(self.cfg["Workflow"]["Output"]["Target"]),
+                PluginName=Database.sanitize(self.cfg["Workflow"]["Output"]["Plugin"]),
+                PluginMethod=Database.sanitize(self.cfg["Workflow"]["Output"]["Method"]),
+                Plugin=self.cfg["Workflow"]["Output"])
+
+        Database.disconnect()
+
     def runInput(self):
         Msg.show("Execute: Input Phase")
         content = self.__callPluginMethod("IO", self.getWorkflowPlugin("Input"), self.frameworkParams)
@@ -94,23 +135,13 @@ class Cocoscats(Cfg):
 
     def runOutput(self):
         Msg.show("Execute: Output Phase")
-        content = self.__callPluginMethod("IO", self.getWorkflowPlugin("Output"), self.frameworkParams)        
+        content = self.__callPluginMethod("IO", self.getWorkflowPlugin("Output"), self.frameworkParams)
         return content
 
     def runTranslator(self):
         Msg.show("Execute: Translation Phase")
         content = self.__callPluginMethod("Translator", self.getWorkflowPlugin("Translator"), self.frameworkParams)
+        print("BEFORE")
+        print(content)
+        print("AFTER")
         return content
-
-    def updateDatabase(self):
-        Database.Foo()
-        #Database.ORM.select(x for x in ODBProject if x.ID == self.cfg["ProjectID"])
-        #Database.execute("DELETE FROM Project WHERE ID = '{0}'".format(self.cfg["ProjectID"]))
-        #content = File.getContent(self.frameworkParams["inputPath"])
-        #description = Database.sanitizeText(self.cfg["Description"])
-        #sql = """
-#INSERT INTO Project (ID, Description, DateTime, Cfg) 
-#VALUES('{0}', '{1}', '{2}', 'x')
-#""".format(self.cfg["ProjectID"], description,
- #          self.frameworkParams["dateTime"])
-  #      print(sql)

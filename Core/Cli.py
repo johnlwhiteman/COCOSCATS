@@ -7,12 +7,12 @@ class Cli():
 
     def run(cocoscats):
         Cli.cocoscats = cocoscats
-        #Cli.cocoscats.purgeContent()
-        #Cli.__runInput()
-        #Cli.__runAnalyzer()
-        #Cli.__runTranslator()
-        #Cli.__runOutput()
-        Cli.cocoscats.updateDatabase()
+        Cli.cocoscats.purgeContent()
+        Cli.__runInput()
+        Cli.__runAnalyzer()
+        Cli.__runTranslator()
+        Cli.__runOutput()
+        Cli.cocoscats.runDatabase()
 
     def __runAnalyzer():
         content = Cli.cocoscats.runAnalyzer()

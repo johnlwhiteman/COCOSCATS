@@ -2,9 +2,9 @@
 import os
 import shutil
 
-files=[]
-dirs=["./COCOSCATS.egg-info", "./build", 
-     "./Core/__pycache__", "./dist",
+files=["./Demo/Simple/houseTranslated.html"]
+dirs=["./COCOSCATS.egg-info", "./build",
+     "./Core/__pycache__", "./Data", "./dist",
      "./Plugin/__pycache__", "./Plugin/Analyzer/__pycache__",
      "./Plugin/IO/__pycache__", "./Plugin/Translator/__pycache__"]
 

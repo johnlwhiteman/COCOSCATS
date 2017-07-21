@@ -84,9 +84,14 @@ class Interface(object):
             sectionizedContent[key] = "\n".join(sectionizedContent[key])
         return sectionizedContent
 
-    def getWorkflowPath(self):
-        if "Path" in self.__workflowPluginParams:
-            return self.__workflowPluginParams["Path"]
+    def getWorkflowSource(self):
+        if "Source" in self.__workflowPluginParams:
+            return self.__workflowPluginParams["Source"]
+        return None
+
+    def getWorkflowTarget(self):
+        if "Target" in self.__workflowPluginParams:
+            return self.__workflowPluginParams["Target"]
         return None
 
     def raiseException(self, msg):
@@ -103,7 +108,7 @@ class Interface(object):
 
     def setOutputContent(self, content):
         content = self.__setContent("outputPath", content)
-        File.copy(self.__frameworkParams["outputPath"], self.getWorkflowPath())
+        File.copy(self.__frameworkParams["outputPath"], self.getWorkflowTarget())
         return content
 
     def setTranslatorContent(self, content):

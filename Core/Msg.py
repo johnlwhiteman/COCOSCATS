@@ -9,11 +9,11 @@ class Msg():
 
     @staticmethod
     def showAbort(msg):
-        sys.stderr.write("\nCOCOSCATS Abort: {0}\n".format(msg))
+        sys.stderr.write("\nCOCOSCATS: Abort: {0}\n".format(msg))
 
     @staticmethod
     def showError(msg):
-        sys.stderr.write("\nCOCOSCATS Error: {0}\n".format(msg))
+        sys.stderr.write("\nCOCOSCATS: Error: {0}\n".format(msg))
 
     @staticmethod
     def showPretty(msg):
@@ -27,4 +27,4 @@ class Msg():
 
     @staticmethod
     def showWarning(msg):
-        sys.stderr.write("\nCOCOSCATS Warning: {0}\n".format(msg))
+        sys.stderr.write("\nCOCOSCATS: Warning: {0}\n".format(msg))

@@ -1,5 +1,6 @@
 from Plugin.Interface import Interface
 import re
+import sys
 
 class HtmlFile(Interface):
 
@@ -14,7 +15,6 @@ class HtmlFile(Interface):
         for token in tc["VOCABULARY"].split("\n"):
             l1, l2, pos, freq = token.split(",")
             tc["L1L2"] = re.sub(r"\b{0}\b".format(l1), '<span class="l2">{0}</span>'.format(l2), tc["L1L2"], re.IGNORECASE)
-
         content = """<html lang="en">
 <head>
     <meta charset="utf-8">

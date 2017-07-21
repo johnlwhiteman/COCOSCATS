@@ -1,5 +1,6 @@
 from Plugin.Interface import Interface
 import re
+import sys
 
 class TextFile(Interface):
 
@@ -16,8 +17,8 @@ class TextFile(Interface):
         return content
 
     def runInput(self):
-        path = self.getWorkflowPath()
-        content = self.__getTextFileContent(path).strip()
+        target = self.getWorkflowSource()
+        content = self.__getTextFileContent(target).strip()
         self.setInputContent(content)
         return content
 
