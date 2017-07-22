@@ -3,9 +3,7 @@ import os
 import sys
 from Core.Cli import Cli
 from Core.Cocoscats import Cocoscats
-from Core.Database import Database
 from Core.Error import Error
-from Core.File import File
 from Core.Msg import Msg
 from Core.Web import Web
 

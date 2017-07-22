@@ -84,8 +84,8 @@ class Cfg(object):
     def isWorkflowEditTrue(self, pluginType):
         return self.isTrue(self.cfg["Workflow"][pluginType]["Edit"])
 
-    def isWorkflowVerboseTrue(self, pluginType):
-        return self.isTrue(self.cfg["Workflow"][pluginType]["Verbose"])
+    def isWorkflowDebugTrue(self, pluginType):
+        return self.isTrue(self.cfg["Workflow"][pluginType]["Debug"])
 
     def load(self, cfgPath="cfg.json"):
         if not os.path.isfile(cfgPath):
@@ -110,6 +110,8 @@ class Cfg(object):
     def verifyCfg(self):
         for name, value in self.cfg.items():
             if name == "ProjectID" or name == "Database":
+                if name == "Database":
+                    value = self.cfg["Database"]["Name"]
                 if len(value) > 256 or Text.isNothing(value):
                     Error.raiseException(
                     "{0} can only be 256 characters or less: {1}".format(name, value))

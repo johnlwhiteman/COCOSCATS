@@ -53,14 +53,17 @@ class Cocoscats(Cfg):
     def initialize(self, cfgPath):
         super(Cocoscats, self).load(cfgPath)
         self.frameworkParams["dataDir"] = "{0}/Data/{1}".format(self.installDir, self.cfg["ProjectID"])
-        os.makedirs(self.frameworkParams["dataDir"], exist_ok=True)
+        File.makeDirectories(self.frameworkParams["dataDir"])
         self.frameworkParams["originalPath"] = "{0}/original.txt".format(self.frameworkParams["dataDir"])
         self.frameworkParams["inputPath"] = "{0}/input.txt".format(self.frameworkParams["dataDir"])
         self.frameworkParams["analyzerPath"] = "{0}/analyzer.txt".format(self.frameworkParams["dataDir"])
         self.frameworkParams["translatorPath"] = "{0}/translator.txt".format(self.frameworkParams["dataDir"])
         self.frameworkParams["outputPath"] = "{0}/output.txt".format(self.frameworkParams["dataDir"])
         self.frameworkParams["dateTime"] = datetime.datetime.now().isoformat()
-        Database.setName(self.cfg["Database"])
+        self.__initializeDatabase()
+
+    def __initializeDatabase(self):
+        Database.setName(self.cfg["Database"]["Name"])
         if not Database.exists():
             Database.create(True)
 
@@ -77,12 +80,12 @@ class Cocoscats(Cfg):
         return File.getContent(self.frameworkParams["analyzerPath"])
 
     def runDatabase(self):
-        if not Text.isTrue(self.cfg["DatabaseEnable"]):
+        if not Text.isTrue(self.cfg["Database"]["Enable"]):
             Msg.showWarning("Database is NOT enabled in {0}".format(self.cfgPath))
             return
         Msg.show("Execute: Database Update")
         Database.connect()
-        Database.setVerbose(Text.toTrueOrFalse(self.cfg["DatabaseVerbose"]))
+        Database.setDebug(Text.toTrueOrFalse(self.cfg["Database"]["Debug"]))
         with Database.ORM.db_session:
             records = Database.Table.Project.get(ID=self.cfg["ProjectID"])
             if records is not None:
@@ -145,3 +148,4 @@ class Cocoscats(Cfg):
         print(content)
         print("AFTER")
         return content
+

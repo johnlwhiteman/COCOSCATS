@@ -1,8 +1,40 @@
 import bottle
+#from bottle_sslify import SSLify
 import json
+import re
+import ssl
 import threading
 import webbrowser
+from wsgiref.simple_server import make_server, WSGIRequestHandler
 from Core.File import File
+from Core.Security import Security
+from Core.Text import Text
+
+import sys
+
+
+# Reference: http://www.socouldanyone.com/2014/01/bottle-with-ssl.html
+# Use: C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s
+class WebTLS(bottle.ServerAdapter):
+
+    def __init__(self, *args, **kwargs):
+        super(WebTLS, self).__init__(*args, **kwargs)
+        self._server = None
+        self.privateKeyPath = None
+        self.certificatePath = None
+
+    def run(self, handler):
+        if self.quiet:
+            class QuietHandler(WSGIRequestHandler):
+                def log_request(*args, **kw): pass
+            self.options['handler_class'] = QuietHandler
+        srv = make_server(self.host, self.port, handler, **self.options)
+        srv.socket = ssl.wrap_socket (
+            srv.socket,
+            keyfile = self.privateKeyPath,
+            certfile = self.certificatePath,
+            server_side = True)
+        srv.serve_forever()
 
 class Web(object):
 
@@ -11,12 +43,6 @@ class Web(object):
     analyzerTainted = False
     translatorTainted = False
     outputTainted = False
-
-    @bottle.route("/Api/GetCfg")
-    def __getCfg():
-        if self.cocoscats.cfg is None:
-            return "{}"
-        return self.cocoscats.cfg
 
     @bottle.get("/Web/css/<path:re:.*\.css>")
     def __getCssPath(path):
@@ -146,16 +172,56 @@ class Web(object):
 
     @bottle.route("/Api/GetPlugins/<pluginType>")
     def __getPlugins(pluginType):
-        return self.cocoscats.getPlugins(pluginType)
+        return Web.cocoscats.getPlugins(pluginType)
+
+    @staticmethod
+    def setupCertificates():
+        certificatePath = Web.cocoscats.cfg["Web"]["Security"]["Certificate"]
+        publicKeyPath = Web.cocoscats.cfg["Web"]["Security"]["PublicKey"]
+        privateKeyPath = Web.cocoscats.cfg["Web"]["Security"]["PrivateKey"]
+        if Text.isTrue(Web.cocoscats.cfg["Web"]["Security"]["AlwaysGenerate"]):
+            File.setContent("goood.txt", "HERER")
+            File.deletes([certificatePath, publicKeyPath, privateKeyPath])
+        if not File.exist([certificatePath, publicKeyPath, privateKeyPath]):
+            Security.generateKeysAndCertificate(privateKeyPath, publicKeyPath, certificatePath)
 
     def run(cocoscats):
         Web.cocoscats = cocoscats
-        browser = webbrowser.get(Web.cocoscats.cfg["Browser"])
-        browser.open("http://{0}:{1}/".format(Web.cocoscats.cfg["Host"],
-                                              Web.cocoscats.cfg["Port"]))
-        threading.Thread(target=bottle.run,
-                         kwargs=dict(host=Web.cocoscats.cfg["Host"],
-                         port=Web.cocoscats.cfg["Port"])).start()
+        Web.useHttps = Text.isTrue(Web.cocoscats.cfg["Web"]["Security"]["UseHttps"])
+        schema = None
+        if Web.useHttps:
+            Web.setupCertificates()
+            server = WebTLS(host=Web.cocoscats.cfg["Web"]["Host"],
+                            port=Web.cocoscats.cfg["Web"]["Port"])
+            server.privateKeyPath = Web.cocoscats.cfg["Web"]["Security"]["PrivateKey"]
+            server.certificatePath = Web.cocoscats.cfg["Web"]["Security"]["Certificate"]
+            #bottle.run(server=server)
+            threading.Thread(target=bottle.run,
+                kwargs=dict(
+                debug = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Debug"]),
+                reloader = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Reloader"]),
+                server = server
+                )).start()
+            schema = "https"
+        else:
+            threading.Thread(target=bottle.run,
+                kwargs=dict(
+                debug = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Debug"]),
+                host = Web.cocoscats.cfg["Web"]["Host"],
+                port = Web.cocoscats.cfg["Web"]["Port"],
+                reloader = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Reloader"])
+                )).start()
+            schema = "http"
+        url = "{0}://{1}:{2}/".format(schema,
+                                      Web.cocoscats.cfg["Web"]["Host"],
+                                      Web.cocoscats.cfg["Web"]["Port"])
+        for client in cocoscats.cfg["Web"]["Browser"]:
+            if Text.isNothing(client) or client == "default":
+                if webbrowser.open(url):
+                    break
+            else:
+                if webbrowser.get(client).open(url):
+                    break
 
     @bottle.route("/Analyzer")
     @bottle.route("/Analyzer/<action>")
@@ -258,6 +324,18 @@ class Web(object):
         editor = Web.getEditor(content)
         body = """{0}{1}""".format(navigation, editor)
         return "{0}{1}{2}".format(header, body, footer)
+
+    @bottle.hook("after_request")
+    def __setSecurityHeaders():
+        #bottle.response.set_header("Cache-Control", "no-cache,no-store,max-age=0,must-revalidate")
+        bottle.response.set_header("Content-Security-Policy","script-src 'self'")
+        bottle.response.set_header("Set-Cookie", "name=value; httpOnly")
+        bottle.response.set_header("X-Content-Type-Options", "nosniff")
+        bottle.response.set_header("X-Frame-Options", "deny")
+        bottle.response.set_header("X-XSS-Protection", "1; mode=block")
+        if Web.useHttps:
+            bottle.response.set_header("Set-Cookie", "name=value; Secure")
+            bottle.response.set_header("Strict-Transport-Security", "max-age=31536000")
 
     @bottle.route("/")
     @bottle.route("/Home")

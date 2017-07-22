@@ -1,4 +1,3 @@
-# -*- coding: utf8 -*-
 import os
 from shutil import copyfile
 from Core.Error import Error
@@ -19,6 +18,18 @@ class File():
         os.unlink(path)
 
     @staticmethod
+    def deletes(paths):
+        for path in paths:
+            File.delete(path)
+
+    @staticmethod
+    def exist(paths):
+        for path in paths:
+            if not File.exists(path):
+                return False
+        return True
+
+    @staticmethod
     def exists(path):
         return os.path.isfile(path)
 
@@ -33,9 +44,23 @@ class File():
         return content
 
     @staticmethod
-    def setContent(path, content):
+    def getParentDirectory(path):
+        return os.path.abspath(os.path.join(path, os.pardir))
+
+    @staticmethod
+    def makeDirectories(path):
+        os.makedirs(path, exist_ok=True)
+
+    @staticmethod
+    def setContent(path, content, asBytes=False, mkdirs=False):
         try:
-            with open(path, "w", encoding="utf8") as fd:
-                fd.write(content)
+            if mkdirs:
+                File.makeDirectories(File.getParentDirectory(path))
+            if asBytes:
+                with open(path, "wb") as fd:
+                    fd.write(content)
+            else:
+                with open(path, "w", encoding="utf8") as fd:
+                    fd.write(content)
         except IOError as e:
             Error.handleException(e, True)

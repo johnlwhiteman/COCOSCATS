@@ -10,8 +10,6 @@ class Database():
     dirPath = Framework.getDatabaseDir()
     dbName = "Cocoscats"
     dbPath = "{0}/{1}.db".format(dirPath, dbName)
-    dropPath = "{0}/Drop.sql".format(dirPath)
-    schemaPath = "{0}/Schema.sql".format(dirPath)
     debugFlag = False
     ORM = orm
     ODB = orm.Database()
@@ -43,7 +41,7 @@ class Database():
                 Database.drop()
             else:
                 return
-        os.makedirs(Database.dirPath, exist_ok=True)
+        File.makeDirectories(Database.dirPath)
         try:
             Database.ODB.bind("sqlite", Database.dbPath, create_db=True)
         except TypeError:
@@ -90,8 +88,8 @@ class Database():
         Database.dbPath = "{0}/{1}.db".format(Database.dirPath, Database.dbName)
 
     @staticmethod
-    def setVerbose(verboseFlag):
-        orm.sql_debug(verboseFlag)
+    def setDebug(debugFlag):
+        orm.sql_debug(debugFlag)
 
     @staticmethod
     def showTablesInfo():

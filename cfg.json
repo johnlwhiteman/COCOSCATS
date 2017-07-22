@@ -2,11 +2,9 @@
     "ProjectID": "WebDude",
     "Description": "John's Goodness goes here",
     "Browser": "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s",
-    "Host": "localhost",
-    "Port": 80,
-    "Database": "Cocoscats",
-    "DatabaseEnable": "True",
-    "DatabaseVerbose": "False",
+    "Host": "127.0.0.1",
+    "Port": "80",
+    "UseHttps": "False",
     "Workflow":
     {
         "Input":
@@ -15,21 +13,21 @@
             "Method": "runInput",
             "Source": "./Demo/Simple/house.txt",
             "Edit": "False",
-            "Verbose": "False"
+            "Debug": "False"
         },
         "Analyzer":
         {
             "Plugin": "Nltk",
             "Method": "runSingleWords",
             "Edit": "False",
-            "Verbose": "False"
+            "Debug": "False"
         },
         "Translator":
         {
             "Plugin": "Azure",
             "Method": "runTranslate",
             "Edit": "False",
-            "Verbose": "False"
+            "Debug": "False"
         },
         "Output":
         {
@@ -37,7 +35,7 @@
             "Method": "runOutput",
             "Target": "./Demo/Simple/houseTranslated.html",
             "Edit": "False",
-            "Verbose": "False"
+            "Debug": "False"
         }
     },
     "Plugin":
@@ -168,5 +166,34 @@
             }
         ]
         }
-    ]
+    ],
+    "Database":
+    {
+        "Name": "Cocoscats",
+        "Enabled": "True",
+        "Debug": "True"
+    },
+    "Web":
+    {
+        "Browser":
+        [
+            "default",
+            "C:/Program Files (x86)/Mozilla Firefox/firefox.exe %s",
+            "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s"
+        ],
+        "Debug": "False",
+        "Host": "127.0.0.1",
+        "Port": "12345",
+        "Reloader": "False",
+        "Security":
+        {
+            "AlwaysGenerate": "False",
+            "Certificate": "./Security/Certificate/Certificate.pem",
+            "PublicKey": "./Security/Key/Public/Public.pem",
+            "PrivateKey": "./Security/Key/Private/Private.pem",
+            "UseAuthentication": "False",
+            "UseHttps": "True"
+        }
+    }
 }
+

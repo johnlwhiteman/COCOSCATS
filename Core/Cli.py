@@ -19,7 +19,7 @@ class Cli():
         if Cli.cocoscats.isWorkflowEditTrue("Analyzer"):
             Cli.__runEditor(Cli.cocoscats.frameworkParams["analyzerPath"],
                             Cli.cocoscats.frameworkParams["analyzerPath"])
-        if Cli.cocoscats.isWorkflowVerboseTrue("Analyzer"):
+        if Cli.cocoscats.isWorkflowDebugTrue("Analyzer"):
             Msg.showRaw(content)
 
     def __runEditor(inputPath, outputPath):
@@ -31,7 +31,7 @@ class Cli():
         if Cli.cocoscats.isWorkflowEditTrue("Input"):
             Cli.__runEditor(Cli.cocoscats.frameworkParams["inputPath"],
                             Cli.cocoscats.frameworkParams["inputPath"])
-        if Cli.cocoscats.isWorkflowVerboseTrue("Input"):
+        if Cli.cocoscats.isWorkflowDebugTrue("Input"):
             Msg.showRaw(content)
 
     def __runOutput():
@@ -39,7 +39,7 @@ class Cli():
         if Cli.cocoscats.isWorkflowEditTrue("Output"):
             Cli.__runEditor(Cli.cocoscats.frameworkParams["outputPath"],
                             Cli.cocoscats.frameworkParams["outputPath"])
-        if Cli.cocoscats.isWorkflowVerboseTrue("Output"):
+        if Cli.cocoscats.isWorkflowDebugTrue("Output"):
             Msg.showRaw(content)
 
     def __runTranslator():
@@ -47,5 +47,5 @@ class Cli():
         if Cli.cocoscats.isWorkflowEditTrue("Translator"):
             Cli.__runEditor(Cli.cocoscats.frameworkParams["translatorPath"],
                             Cli.cocoscats.frameworkParams["translatorPath"])
-        if Cli.cocoscats.isWorkflowVerboseTrue("Translator"):
+        if Cli.cocoscats.isWorkflowDebugTrue("Translator"):
             Msg.showRaw(content)
