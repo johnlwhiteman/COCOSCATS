@@ -4,6 +4,12 @@ import re
 class Text():
 
     @staticmethod
+    def getTextOnly(something):
+        if Text.isNothing(something):
+            return ""
+        return something.strip()
+
+    @staticmethod
     def isNothing(something):
         return something is None or str(something).strip() == ""
 

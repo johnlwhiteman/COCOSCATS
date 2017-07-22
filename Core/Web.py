@@ -12,10 +12,10 @@ from Core.Text import Text
 
 # Reference: http://www.socouldanyone.com/2014/01/bottle-with-ssl.html
 # Use: C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s
-class WebTLS(bottle.ServerAdapter):
+class WebSecurity(bottle.ServerAdapter):
 
     def __init__(self, *args, **kwargs):
-        super(WebTLS, self).__init__(*args, **kwargs)
+        super(WebSecurity, self).__init__(*args, **kwargs)
         self._server = None
         self.privateKeyPath = None
         self.certificatePath = None
@@ -33,6 +33,15 @@ class WebTLS(bottle.ServerAdapter):
             server_side = True)
         srv.serve_forever()
 
+    def setupCertificate(self):
+        certificatePath = Web.cocoscats.cfg["Web"]["Security"]["Certificate"]
+        publicKeyPath = Web.cocoscats.cfg["Web"]["Security"]["PublicKey"]
+        privateKeyPath = Web.cocoscats.cfg["Web"]["Security"]["PrivateKey"]
+        if Text.isTrue(Web.cocoscats.cfg["Web"]["Security"]["AlwaysGenerate"]):
+            File.deletes([certificatePath, publicKeyPath, privateKeyPath])
+        if not File.exist([certificatePath, publicKeyPath, privateKeyPath]):
+            Security.generateKeysAndCertificate(privateKeyPath, publicKeyPath, certificatePath)
+
 class Web(object):
 
     cocoscats = None
@@ -41,185 +50,103 @@ class Web(object):
     translatorTainted = False
     outputTainted = False
 
-    @bottle.get("/Web/css/<path:re:.*\.css>")
-    def __getCssPath(path):
-        return bottle.static_file(path, root="Web/css")
-
+    # Get Methods ###########################
     @staticmethod
     def getEditor(content):
-        return """
-<table>
-<tr>
-<td><textarea id="content">{0}</textarea></td>
-</tr><tr>
-<td align="center"><div id="cfgMsg">&nbsp;</div></td>
-</tr><tr>
-<td align="right">
-<button type="button" id="editorSave">Save</button>
-</td>
-</tr>
-</table>
-""".format(content)
+        replace = {"content": content}
+        return bottle.template("Web/Tpl/Editor.tpl", replace)
 
     @staticmethod
     def getFooter():
-        return """
-<script src="/Web/js/jquery.js"></script>
-<script src="/Web/js/cocoscats.js"></script>
-</body>
-</html>"""
+        return bottle.template("Web/Tpl/Footer.tpl", {})
 
     @staticmethod
-    def getHeader(title):
-        return """<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Cocoscats: {0}</title>
-    <link rel="stylesheet" href="/Web/css/cocoscats.css">
-</head>
-<body>
-<a href="/">Home</a> | <a href="/Reset">Reset</a>""".format(title)
-
-    @bottle.get("/Web/html/<path:re:.*\.html>")
-    def getHtmlPath(path):
-        return bottle.static_file(path, root="Web/html")
-
-    @bottle.get("/Web/img/<path:re:.*\.(jpg|png)>")
-    def getImgPath(path):
-        return bottle.static_file(path, root="Web/img")
-
-    @bottle.get("/Web/js/<path:re:.*\.js>")
-    def getJsPath(path):
-        return bottle.static_file(path, root="Web/js")
+    def getHeader(title,  meta="", css="", js=""):
+        replace = {
+            "title": title,
+            "meta": meta,
+            "css": css,
+            "js": js
+        }
+        return """{0}{1}""".format(
+            bottle.template("Web/Tpl/Header.tpl", replace),
+            bottle.template("Web/Tpl/Menu.tpl", replace))
 
     @staticmethod
-    def getNavigation(title):
-        content = ""
-        if title == "Configuration":
-            content = """
-<h2>Step 1: Configuration</h2>
-<table>
-<tr>
-<td><a href="/Input">Input</a></td>
-<td>|</td>
-<td>Analyzer</td>
-<td>|</td>
-<td>Translator</td>
-<td>|</td>
-<td>Output</td>
-<td>|</td>
-<td>View</td>
-</tr>
-</table>"""
-        elif title == "Input":
-            content = """
-<h2>Step 2: Input</h2>
-<table>
-<tr>
-<td><span id="navTitle">Input</span></td>
-<td>|</td>
-<td><a href="/Analyzer">Analyzer</a></td>
-<td>|</td>
-<td>Translator</td>
-<td>|</td>
-<td>Output</td>
-<td>|</td>
-<td>View</td>
-</tr>
-</table>"""
+    def getNavigation(title, step):
+        replace = {
+            "title": title,
+            "step": step,
+            "Input": "Input",
+            "Analyzer": "Analyzer",
+            "Translator": "Translator",
+            "Output": "Output",
+            "View": "View"
+        }
+        if title == "Input":
+            replace["Input"] = """<span id="navTitle">Input</span>"""
+            replace["Analyzer"] = """<a href="/Analyzer">Analyzer</a>"""
         elif title == "Analyzer":
-            content = """
-<h2>Step 3: Analyzer</h2>
-<table>
-<tr>
-<td><a href="/Input">Input</a></td>
-<td>|</td>
-<td><span id="navTitle">Analyzer</span></td>
-<td>|</td>
-<td><a href="/Translator">Translator</a></td>
-<td>|</td>
-<td>Output</td>
-<td>|</td>
-<td>View</td>
-</tr>
-</table>"""
+            replace["Input"]  = """<a href="/Input">Input</a>"""
+            replace["Analyzer"] = """<span id="navTitle">Analyzer</span>"""
+            replace["Translator"]  = """<a href="/Translator">Translator</a>"""
         elif title == "Translator":
-            content = """
-<h2>Step 4: Translator</h2>
-<table>
-<tr>
-<td><a href="/Input">Input</a></td>
-<td>|</td>
-<td><a href="/Analyzer">Analyzer</a></td>
-<td>|</td>
-<td><span id="navTitle">Translator</span></td>
-<td>|</td>
-<td><a href="/Output">Output</a></td>
-<td>|</td>
-<td>View</td>
-</tr>
-</table>"""
+            replace["Input"] = """<a href="/Input">Input</a>"""
+            replace["Analyzer"] = """<a href="/Analyzer">Analyzer</a>"""
+            replace["Translator"] = """<span id="navTitle">Translator</span>"""
+            replace["Output"] = """<a href="/Output">Output</a>"""
         elif title == "Output":
-            content = """
-<h2>Step 4: Output</h2>
-<table>
-<tr>
-<td><a href="/Input">Input</a></td>
-<td>|</td>
-<td><a href="/Analyzer">Analyzer</a></td>
-<td>|</td>
-<td><a href="/Translator">Translator</a></td>
-<td>|</td>
-<td><span id="navTitle">Output</span></td>
-<td>|</td>
-<td><a href="/View">View</a></td>
-</tr>
-</table>"""
+            replace["Input"] = """<a href="/Input">Input</a>"""
+            replace["Analyzer"] = """<a href="/Analyzer">Analyzer</a>"""
+            replace["Translator"] = """<a href="/Translator">Translator</a>"""
+            replace["Output"] = """<span id="navTitle">Output</span>"""
+            replace["View"] = """<a href="/View">View</a>"""
         elif title == "View":
-            content = """
-<h2>Step 5: View</h2>
-<table>
-<tr>
-<td><a href="/Input">Input</a></td>
-<td>|</td>
-<td><a href="/Analyzer">Analyzer</a></td>
-<td>|</td>
-<td><a href="/Translator">Translator</a></td>
-<td>|</td>
-<td><a href="/Output">Output</a></td>
-<td>|</td>
-<td><span id="navTitle">View</span></td>
-</tr>
-</table>"""
-        return content
+            replace["Input"] = """<a href="/Input">Input</a>"""
+            replace["Analyzer"] = """<a href="/Analyzer">Analyzer</a>"""
+            replace["Translator"] = """<a href="/Translator">Translator</a>"""
+            replace["Output"] = """<a href="/Output">Output</a>"""
+            replace["View"] = """<span id="navTitle">View</span>"""
+        return bottle.template("Web/Tpl/Navigation.tpl", replace)
 
-    @bottle.route("/Api/GetPlugins/<pluginType>")
-    def __getPlugins(pluginType):
-        return Web.cocoscats.getPlugins(pluginType)
 
-    @staticmethod
-    def setupCertificates():
-        certificatePath = Web.cocoscats.cfg["Web"]["Security"]["Certificate"]
-        publicKeyPath = Web.cocoscats.cfg["Web"]["Security"]["PublicKey"]
-        privateKeyPath = Web.cocoscats.cfg["Web"]["Security"]["PrivateKey"]
-        if Text.isTrue(Web.cocoscats.cfg["Web"]["Security"]["AlwaysGenerate"]):
-            File.setContent("goood.txt", "HERER")
-            File.deletes([certificatePath, publicKeyPath, privateKeyPath])
-        if not File.exist([certificatePath, publicKeyPath, privateKeyPath]):
-            Security.generateKeysAndCertificate(privateKeyPath, publicKeyPath, certificatePath)
+    # Set Methods ###########################
+    @bottle.get("/Web/Css/<path:re:.*\.css>")
+    def __setCssPath(path):
+        return bottle.static_file(path, root="Web/Css")
+
+    @bottle.get("/Web/Html/<path:re:.*\.html>")
+    def __setHtmlPath(path):
+        return bottle.static_file(path, root="Web/Html")
+
+    @bottle.get("/Web/Img/<path:re:.*\.(jpg|png)>")
+    def __setImgPath(path):
+        return bottle.static_file(path, root="Web/Img")
+
+    @bottle.get("/Web/Js/<path:re:.*\.js>")
+    def __setJsPath(path):
+        return bottle.static_file(path, root="Web/Js")
+
+    @bottle.hook("after_request")
+    def __setSecurityHeaders():
+        #bottle.response.set_header("Cache-Control", "no-cache,no-store,max-age=0,must-revalidate")
+        bottle.response.set_header("Content-Security-Policy","script-src 'self'")
+        bottle.response.set_header("Set-Cookie", "name=value; httpOnly")
+        bottle.response.set_header("X-Content-Type-Options", "nosniff")
+        bottle.response.set_header("X-Frame-Options", "deny")
+        bottle.response.set_header("X-XSS-Protection", "1; mode=block")
+        if Web.useHttps:
+            bottle.response.set_header("Set-Cookie", "name=value; Secure")
+            bottle.response.set_header("Strict-Transport-Security", "max-age=31536000")
 
     def run(cocoscats):
         Web.cocoscats = cocoscats
         Web.useHttps = Text.isTrue(Web.cocoscats.cfg["Web"]["Security"]["UseHttps"])
         schema = None
         if Web.useHttps:
-            Web.setupCertificates()
-            server = WebTLS(host=Web.cocoscats.cfg["Web"]["Host"],
-                            port=Web.cocoscats.cfg["Web"]["Port"])
-            server.privateKeyPath = Web.cocoscats.cfg["Web"]["Security"]["PrivateKey"]
-            server.certificatePath = Web.cocoscats.cfg["Web"]["Security"]["Certificate"]
-            #bottle.run(server=server)
+            server = WebSecurity(host=Web.cocoscats.cfg["Web"]["Host"],
+                                 port=Web.cocoscats.cfg["Web"]["Port"])
+            server.setupCertificate()
             threading.Thread(target=bottle.run,
                 kwargs=dict(
                 debug = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Debug"]),
@@ -253,7 +180,7 @@ class Web(object):
     def __runAnalyzer(action=None):
         header = Web.getHeader("Analyzer")
         footer = Web.getFooter()
-        navigation = Web.getNavigation("Analyzer")
+        navigation = Web.getNavigation("Analyzer", 2)
         path = Web.cocoscats.frameworkParams["analyzerPath"]
         if not action is None and action == "Save":
             File.setContent(path, bottle.request.forms.Content)
@@ -276,7 +203,7 @@ class Web(object):
     def __runInput(action=None):
         header = Web.getHeader("Input")
         footer = Web.getFooter()
-        navigation = Web.getNavigation("Input")
+        navigation = Web.getNavigation("Input", 1)
         path = Web.cocoscats.frameworkParams["inputPath"]
         if not action is None and action == "Save":
             File.setContent(path, bottle.request.forms.Content)
@@ -300,7 +227,7 @@ class Web(object):
     def __runOutput(action=None):
         header = Web.getHeader("Output")
         footer = Web.getFooter()
-        navigation = Web.getNavigation("Output")
+        navigation = Web.getNavigation("Output", 4)
         path = Web.cocoscats.frameworkParams["outputPath"]
         if not action is None and action == "Save":
             File.setContent(path, bottle.request.forms.Content)
@@ -333,7 +260,7 @@ class Web(object):
     def __runTranslator(action=None):
         header = Web.getHeader("Translator")
         footer = Web.getFooter()
-        navigation = Web.getNavigation("Translator")
+        navigation = Web.getNavigation("Translator", 3)
         path = Web.cocoscats.frameworkParams["translatorPath"]
         if not action is None and action == "Save":
             File.setContent(path, bottle.request.forms.Content)
@@ -359,24 +286,33 @@ class Web(object):
         body = """{0}""".format(navigation)
         return "{0}{1}{2}".format(header, body, footer)
 
-    @bottle.hook("after_request")
-    def __setSecurityHeaders():
-        #bottle.response.set_header("Cache-Control", "no-cache,no-store,max-age=0,must-revalidate")
-        bottle.response.set_header("Content-Security-Policy","script-src 'self'")
-        bottle.response.set_header("Set-Cookie", "name=value; httpOnly")
-        bottle.response.set_header("X-Content-Type-Options", "nosniff")
-        bottle.response.set_header("X-Frame-Options", "deny")
-        bottle.response.set_header("X-XSS-Protection", "1; mode=block")
-        if Web.useHttps:
-            bottle.response.set_header("Set-Cookie", "name=value; Secure")
-            bottle.response.set_header("Strict-Transport-Security", "max-age=31536000")
+    @bottle.route("/Documentation")
+    @bottle.route("/Documentation")
+    def __showDocumentation():
+        return """{0}{1}{2}""".format(
+            Web.getHeader("Documentation"),
+            bottle.template("Web/Tpl/Documentation.tpl", {}),
+            Web.getFooter())
 
     @bottle.route("/")
-    @bottle.route("/Home")
     @bottle.route("/<path>")
-    def __showHome(path="index.html"):
-        return bottle.static_file(path, root="Web/html")
+    def __showIndex(path="index.html"):
+        return """{0}{1}{2}""".format(
+            Web.getHeader("Welcome to Cocoscats"),
+            bottle.template("Web/Tpl/Index.tpl", {}),
+            Web.getFooter())
 
-    @bottle.route("/Api/Test")
-    def __test():
-        return """{"Say":"testing, testing, testing ..."}"""
+
+        #return bottle.static_file(path, root="Web/html")
+
+
+class WebApi(object):
+
+    @bottle.route("/Api/GetPlugins/<pluginType>")
+    def __getPlugins(pluginType):
+        return Web.cocoscats.getPlugins(pluginType)
+
+
+class WebApp(object):
+    pass
+    # The actual content goes here

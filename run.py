@@ -8,6 +8,8 @@ from Core.Msg import Msg
 from Core.Web import Web
 
 if __name__ == "__main__":
+    step = 1
+    title = "Input"
     cfgPath = "cfg.json"
     parser = argparse.ArgumentParser( \
         prog=os.path.basename(__file__),

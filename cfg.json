@@ -1,10 +1,6 @@
 {
     "ProjectID": "WebDude",
     "Description": "John's Goodness goes here",
-    "Browser": "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s",
-    "Host": "127.0.0.1",
-    "Port": "80",
-    "UseHttps": "False",
     "Workflow":
     {
         "Input":
