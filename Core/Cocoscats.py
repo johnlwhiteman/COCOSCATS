@@ -64,6 +64,8 @@ class Cocoscats(Cfg):
 
     def __initializeDatabase(self):
         Database.setName(self.cfg["Database"]["Name"])
+        if Text.isTrue(self.cfg["Database"]["Rebuild"]):
+            Database.drop()
         if not Database.exists():
             Database.create(True)
 
@@ -144,8 +146,4 @@ class Cocoscats(Cfg):
     def runTranslator(self):
         Msg.show("Execute: Translation Phase")
         content = self.__callPluginMethod("Translator", self.getWorkflowPlugin("Translator"), self.frameworkParams)
-        print("BEFORE")
-        print(content)
-        print("AFTER")
         return content
-

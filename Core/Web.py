@@ -10,9 +10,6 @@ from Core.File import File
 from Core.Security import Security
 from Core.Text import Text
 
-import sys
-
-
 # Reference: http://www.socouldanyone.com/2014/01/bottle-with-ssl.html
 # Use: C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s
 class WebTLS(bottle.ServerAdapter):
@@ -98,6 +95,7 @@ class Web(object):
 
     @staticmethod
     def getNavigation(title):
+        content = ""
         if title == "Configuration":
             content = """
 <h2>Step 1: Configuration</h2>
@@ -110,6 +108,8 @@ class Web(object):
 <td>Translator</td>
 <td>|</td>
 <td>Output</td>
+<td>|</td>
+<td>View</td>
 </tr>
 </table>"""
         elif title == "Input":
@@ -124,6 +124,8 @@ class Web(object):
 <td>Translator</td>
 <td>|</td>
 <td>Output</td>
+<td>|</td>
+<td>View</td>
 </tr>
 </table>"""
         elif title == "Analyzer":
@@ -138,6 +140,8 @@ class Web(object):
 <td><a href="/Translator">Translator</a></td>
 <td>|</td>
 <td>Output</td>
+<td>|</td>
+<td>View</td>
 </tr>
 </table>"""
         elif title == "Translator":
@@ -152,6 +156,8 @@ class Web(object):
 <td><span id="navTitle">Translator</span></td>
 <td>|</td>
 <td><a href="/Output">Output</a></td>
+<td>|</td>
+<td>View</td>
 </tr>
 </table>"""
         elif title == "Output":
@@ -166,6 +172,24 @@ class Web(object):
 <td><a href="/Translator">Translator</a></td>
 <td>|</td>
 <td><span id="navTitle">Output</span></td>
+<td>|</td>
+<td><a href="/View">View</a></td>
+</tr>
+</table>"""
+        elif title == "View":
+            content = """
+<h2>Step 5: View</h2>
+<table>
+<tr>
+<td><a href="/Input">Input</a></td>
+<td>|</td>
+<td><a href="/Analyzer">Analyzer</a></td>
+<td>|</td>
+<td><a href="/Translator">Translator</a></td>
+<td>|</td>
+<td><a href="/Output">Output</a></td>
+<td>|</td>
+<td><span id="navTitle">View</span></td>
 </tr>
 </table>"""
         return content
@@ -323,6 +347,16 @@ class Web(object):
             content = Web.cocoscats.runTranslator()
         editor = Web.getEditor(content)
         body = """{0}{1}""".format(navigation, editor)
+        return "{0}{1}{2}".format(header, body, footer)
+
+    @bottle.route("/View")
+    @bottle.route("/View/<action>")
+    @bottle.route("/View/<action>", method="POST")
+    def __runView(action=None):
+        header = Web.getHeader("View")
+        footer = Web.getFooter()
+        navigation = Web.getNavigation("View")
+        body = """{0}""".format(navigation)
         return "{0}{1}{2}".format(header, body, footer)
 
     @bottle.hook("after_request")

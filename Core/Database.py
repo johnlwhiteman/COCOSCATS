@@ -1,3 +1,4 @@
+import json
 import os
 from pony import orm
 import sqlite3
@@ -5,6 +6,8 @@ import sys
 from Core.File import File
 from Core.Framework import Framework
 from Core.Msg import Msg
+
+# Reference: https://www.blog.pythonlibrary.org/2014/07/21/python-101-an-intro-to-pony-orm/
 
 class Database():
     dirPath = Framework.getDatabaseDir()
@@ -78,25 +81,115 @@ class Database():
         return os.path.isfile(Database.dbPath)
 
     @staticmethod
+    def getProject(projectID, asJson=False):
+        with Database.ORM.db_session:
+            result = Database.Table.Project.get(ID=projectID)
+            if asJson:
+                if result is None:
+                    return json.dumps({})
+                return json.dumps({
+                    "ID": result.ID,
+                    "Description": result.Description,
+                    "DateTime": result.DateTime,
+                    "Workflow": result.Workflow
+                })
+            return result
+
+    @staticmethod
+    def getProjectAnalyzer(projectID, asJson=False):
+        with Database.ORM.db_session:
+            result = Database.Table.Analyzer.get(ProjectID=projectID)
+            if asJson:
+                if result is None:
+                    return json.dumps({})
+                return json.dumps({
+                    "ID": result.ID,
+                    "ProjectID": projectID,
+                    "Content": result.Content,
+                    "PluginName": result.PluginName,
+                    "PluginMethod": result.PluginMethod,
+                    "Plugin": result.Plugin
+                })
+            return result
+
+    @staticmethod
+    def getProjectInput(projectID, asJson=False):
+        with Database.ORM.db_session:
+            result = Database.Table.Input.get(ProjectID=projectID)
+            if asJson:
+                if result is None:
+                    return json.dumps({})
+                return json.dumps({
+                    "ID": result.ID,
+                    "ProjectID": projectID,
+                    "Content": result.Content,
+                    "Source": result.Source,
+                    "PluginName": result.PluginName,
+                    "PluginMethod": result.PluginMethod,
+                    "Plugin": result.Plugin
+                })
+            return result
+
+    @staticmethod
+    def getProjectOutput(projectID, asJson=False):
+        with Database.ORM.db_session:
+            result = Database.Table.Output.get(ProjectID=projectID)
+            if asJson:
+                if result is None:
+                    return json.dumps({})
+                return json.dumps({
+                    "ID": result.ID,
+                    "ProjectID": projectID,
+                    "Content": result.Content,
+                    "Traget": result.Target,
+                    "PluginName": result.PluginName,
+                    "PluginMethod": result.PluginMethod,
+                    "Plugin": result.Plugin
+                })
+            return result
+
+    @staticmethod
+    def getProjectResults(projectID, asJson=False):
+        result = {}
+        result["Project"] = Database.getProject(projectID, asJson)
+        result["Input"] = Database.getProjectInput(projectID, asJson)
+        result["Analyzer"] = Database.getProjectAnalyzer(projectID, asJson)
+        result["Translator"] = Database.getProjectTranslator(projectID, asJson)
+        result["Output"] = Database.getProjectOutput(projectID, asJson)
+        if asJson:
+            return json.dumps(result)
+        return result
+
+    @staticmethod
+    def getProjectTranslator(projectID, asJson):
+        with Database.ORM.db_session:
+            result =  Database.Table.Translator.get(ProjectID=projectID)
+            if asJson:
+                if result is None:
+                    return json.dumps({})
+                return json.dumps({
+                    "ID": result.ID,
+                    "ProjectID": projectID,
+                    "Content": result.Content,
+                    "PluginName": result.PluginName,
+                    "PluginMethod": result.PluginMethod,
+                    "Plugin": result.Plugin
+                })
+            return result
+
+    @staticmethod
     def sanitize(something):
         something = something.replace("'", "\\'")
         return something
-
-    @staticmethod
-    def setName(dbName):
-        Database.dbName = dbName
-        Database.dbPath = "{0}/{1}.db".format(Database.dirPath, Database.dbName)
 
     @staticmethod
     def setDebug(debugFlag):
         orm.sql_debug(debugFlag)
 
     @staticmethod
-    def showTablesInfo():
-        tableNames = Database.getTableNames()
-        for tableName in tableNames:
-            rowCount = Database.getTableRowCount(tableName)
-            print("{0}: [{1}]".format(tableName, rowCount))
+    def setName(dbName):
+        Database.dbName = dbName
+        Database.dbPath = "{0}/{1}.db".format(Database.dirPath, Database.dbName)
 
 class Project(Database.ODB.Entity):
     ID = orm.PrimaryKey(str)
@@ -147,34 +240,3 @@ Database.Table.Input = Input
 Database.Table.Analyzer = Analyzer
 Database.Table.Translator = Translator
 Database.Table.Output = Output
-
-#ORM.bind("sqlite", dbPath, create_db=True)
-#ORM.generate_mapping(create_tables=True)
-
-#with orm.db_session:
-#    id = "homeskillet"
-
-#    projectTable = Project(ID=id,
-#                    Description="Read All About It",
-#                    DateTime="7/20/2017",
-#                    Cfg="config goes here")
-
-#    inputTable = Input(ProjectID=projectTable,
-#                       Content="Here is the content",
-##                       Source="Source",
- #                      PluginName="foobar",
- #                      PluginMethod="foobarmethod",
- #                      Plugin="{}")
-
-    #https://www.blog.pythonlibrary.org/2014/07/21/python-101-an-intro-to-pony-orm/
-   # p = Project.get(ID=id)
-   # if p is not None:
-    #    p.delete()
-    #p = Project.get(ID="dfasfasf")
-    #print(len(p))
-    #band.delete()
-
-
-
-
-

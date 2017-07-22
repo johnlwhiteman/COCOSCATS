@@ -170,8 +170,9 @@
     "Database":
     {
         "Name": "Cocoscats",
-        "Enabled": "True",
-        "Debug": "True"
+        "Enable": "True",
+        "Debug": "False",
+        "Rebuild": "True"
     },
     "Web":
     {
@@ -181,7 +182,7 @@
             "C:/Program Files (x86)/Mozilla Firefox/firefox.exe %s",
             "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s"
         ],
-        "Debug": "False",
+        "Debug": "True",
         "Host": "127.0.0.1",
         "Port": "12345",
         "Reloader": "False",
@@ -192,7 +193,7 @@
             "PublicKey": "./Security/Key/Public/Public.pem",
             "PrivateKey": "./Security/Key/Private/Private.pem",
             "UseAuthentication": "False",
-            "UseHttps": "True"
+            "UseHttps": "False"
         }
     }
 }
