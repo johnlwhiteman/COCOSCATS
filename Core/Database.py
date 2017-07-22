@@ -3,6 +3,7 @@ import os
 from pony import orm
 import sqlite3
 import sys
+from Core.Directory import Directory
 from Core.File import File
 from Core.Framework import Framework
 from Core.Msg import Msg
@@ -10,9 +11,9 @@ from Core.Msg import Msg
 # Reference: https://www.blog.pythonlibrary.org/2014/07/21/python-101-an-intro-to-pony-orm/
 
 class Database():
-    dirPath = Framework.getDatabaseDir()
-    dbName = "Cocoscats"
-    dbPath = "{0}/{1}.db".format(dirPath, dbName)
+    directory = Framework.getDatabaseDir()
+    name = "Cocoscats"
+    path = "{0}/{1}.db".format(directory, name)
     debugFlag = False
     ORM = orm
     ODB = orm.Database()
@@ -31,7 +32,7 @@ class Database():
     @staticmethod
     def connect():
         try:
-            Database.ODB.bind("sqlite", Database.dbPath, create_db=True)
+            Database.ODB.bind("sqlite", Database.path, create_db=True)
         except TypeError:
             pass
         else:
@@ -44,9 +45,9 @@ class Database():
                 Database.drop()
             else:
                 return
-        File.makeDirectories(Database.dirPath)
+        Directory.make(Database.directory)
         try:
-            Database.ODB.bind("sqlite", Database.dbPath, create_db=True)
+            Database.ODB.bind("sqlite", Database.path, create_db=True)
         except TypeError:
             pass
         else:
@@ -60,11 +61,11 @@ class Database():
     @staticmethod
     def drop():
         if Database.exists():
-            os.unlink(Database.dbPath)
+            os.unlink(Database.path)
 
     @staticmethod
     def execute(sql, commit=True, asScript=False):
-        conn = sqlite3.connect(Database.dbPath)
+        conn = sqlite3.connect(Database.path)
         cur = conn.cursor()
         if not asScript:
             cur.execute(sql)
@@ -78,7 +79,7 @@ class Database():
 
     @staticmethod
     def exists():
-        return os.path.isfile(Database.dbPath)
+        return os.path.isfile(Database.path)
 
     @staticmethod
     def getProject(projectID, asJson=False):
@@ -187,9 +188,10 @@ class Database():
         orm.sql_debug(debugFlag)
 
     @staticmethod
-    def setName(dbName):
-        Database.dbName = dbName
-        Database.dbPath = "{0}/{1}.db".format(Database.dirPath, Database.dbName)
+    def setPath(path):
+        Database.path = File.getAbsPath(path)
+        Database.name = File.getName(path)
+        Database.directory = File.getDirectory(path)
 
 class Project(Database.ODB.Entity):
     ID = orm.PrimaryKey(str)

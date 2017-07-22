@@ -1,5 +1,6 @@
 import os
 from shutil import copyfile
+from Core.Directory import Directory
 from Core.Error import Error
 
 class File():
@@ -34,6 +35,18 @@ class File():
         return os.path.isfile(path)
 
     @staticmethod
+    def getAbsPath(path):
+        return File.getCanonicalPath(os.path.abspath(path))
+
+    @staticmethod
+    def getBasename(path):
+        return os.path.basename(path)
+
+    @staticmethod
+    def getCanonicalPath(path):
+        return path.replace('\\', '/')
+
+    @staticmethod
     def getContent(path):
         content = None
         try:
@@ -44,18 +57,18 @@ class File():
         return content
 
     @staticmethod
-    def getParentDirectory(path):
-        return os.path.abspath(os.path.join(path, os.pardir))
+    def getName(path):
+        return File.getCanonicalPath(os.path.basename(os.path.splitext(path)[0]))
 
     @staticmethod
-    def makeDirectories(path):
-        os.makedirs(path, exist_ok=True)
+    def getDirectory(path):
+        return File.getCanonicalPath(os.path.abspath(os.path.join(path, os.pardir)))
 
     @staticmethod
     def setContent(path, content, asBytes=False, mkdirs=False):
         try:
             if mkdirs:
-                File.makeDirectories(File.getParentDirectory(path))
+                Directory.make(File.getDirectory(path))
             if asBytes:
                 with open(path, "wb") as fd:
                     fd.write(content)

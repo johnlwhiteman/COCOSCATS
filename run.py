@@ -8,22 +8,20 @@ from Core.Msg import Msg
 from Core.Web import Web
 
 if __name__ == "__main__":
-    step = 1
-    title = "Input"
     cfgPath = "cfg.json"
     parser = argparse.ArgumentParser( \
         prog=os.path.basename(__file__),
-        description="Does something useful",
+        description="Command line interface for Cocoscats",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-c", "--cfg", metavar="'cfg'", type=str,
                         default=cfgPath,
                         help="JSON configuration file")
     parser.add_argument("-C", "--cli",
                         action="store_true",
-                        help="Run in command line mode")
+                        help="Run command line interface")
     parser.add_argument("-W", "--web",
                         action="store_true",
-                        help="Run in web mode")
+                        help="Run web interface")
     args = parser.parse_args()
     if args.cfg:
         cfgPath = args.cfg

@@ -2,6 +2,7 @@ import glob
 import importlib
 import json
 import os
+from Core.Directory import Directory
 from Core.Msg import Msg
 
 class Framework():
@@ -12,7 +13,7 @@ class Framework():
 
     @staticmethod
     def getInstallDir():
-        return os.path.dirname(os.path.dirname(os.path.realpath(__file__))).replace('\\', '/')
+        return Directory.getCanonicalPath(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
     @staticmethod
     def getPluginMethod(pluginInstance, methodName):

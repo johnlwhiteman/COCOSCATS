@@ -7,6 +7,7 @@ import sys
 import traceback
 from Core.Cfg import Cfg
 from Core.Database import Database
+from Core.Directory import Directory
 from Core.Error import Error
 from Core.File import File
 from Core.Msg import Msg
@@ -53,7 +54,7 @@ class Cocoscats(Cfg):
     def initialize(self, cfgPath):
         super(Cocoscats, self).load(cfgPath)
         self.frameworkParams["dataDir"] = "{0}/Data/{1}".format(self.installDir, self.cfg["ProjectID"])
-        File.makeDirectories(self.frameworkParams["dataDir"])
+        Directory.make(self.frameworkParams["dataDir"])
         self.frameworkParams["originalPath"] = "{0}/original.txt".format(self.frameworkParams["dataDir"])
         self.frameworkParams["inputPath"] = "{0}/input.txt".format(self.frameworkParams["dataDir"])
         self.frameworkParams["analyzerPath"] = "{0}/analyzer.txt".format(self.frameworkParams["dataDir"])
@@ -63,7 +64,7 @@ class Cocoscats(Cfg):
         self.__initializeDatabase()
 
     def __initializeDatabase(self):
-        Database.setName(self.cfg["Database"]["Name"])
+        Database.setPath(self.cfg["Database"]["Path"])
         if Text.isTrue(self.cfg["Database"]["Rebuild"]):
             Database.drop()
         if not Database.exists():

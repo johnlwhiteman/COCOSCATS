@@ -56,6 +56,12 @@ textarea {
   font-weight: inherit;
 }
 
+#footer {
+  color: grey;
+  text-align: center;
+  font-style: italic;
+}
+
 #navTitle {
   font-weight: bold;
   font-style: italic;

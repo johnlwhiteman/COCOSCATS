@@ -109,9 +109,7 @@ class Cfg(object):
 
     def verifyCfg(self):
         for name, value in self.cfg.items():
-            if name == "ProjectID" or name == "Database":
-                if name == "Database":
-                    value = self.cfg["Database"]["Name"]
+            if name == "ProjectID":
                 if len(value) > 256 or Text.isNothing(value):
                     Error.raiseException(
                     "{0} can only be 256 characters or less: {1}".format(name, value))

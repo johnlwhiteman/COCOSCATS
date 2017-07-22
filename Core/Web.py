@@ -4,6 +4,7 @@ import json
 import re
 import ssl
 import threading
+import time
 import webbrowser
 from wsgiref.simple_server import make_server, WSGIRequestHandler
 from Core.File import File
@@ -58,7 +59,11 @@ class Web(object):
 
     @staticmethod
     def getFooter():
-        return bottle.template("Web/Tpl/Footer.tpl", {})
+        replace = {"year": "2017"}
+        year = time.strftime("%Y")
+        if year != replace["year"]:
+            replace["year"] = "{0}-{1}".format(replace["year"], year)
+        return bottle.template("Web/Tpl/Footer.tpl", replace)
 
     @staticmethod
     def getHeader(title,  meta="", css="", js=""):
@@ -282,7 +287,7 @@ class Web(object):
     def __runView(action=None):
         header = Web.getHeader("View")
         footer = Web.getFooter()
-        navigation = Web.getNavigation("View")
+        navigation = Web.getNavigation("View", 4)
         body = """{0}""".format(navigation)
         return "{0}{1}{2}".format(header, body, footer)
 
