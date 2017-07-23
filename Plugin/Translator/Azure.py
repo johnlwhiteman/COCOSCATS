@@ -1,4 +1,6 @@
 from Plugin.Interface import Interface
+import json
+import os
 import re
 import requests
 from xml.etree import ElementTree
@@ -51,13 +53,15 @@ inputContent, translatedInputContent)
 
     def __getAccessToken(self):
         response = None
+        credentials = self.__getCredentials()
         try:
             url = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken"
             headers = {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "Ocp-Apim-Subscription-Key": self.getPluginParamValue("AccessKey")
+                "Ocp-Apim-Subscription-Key": credentials["AccessKey"]
             }
+            del(credentials)
             response = requests.post(url, headers=headers)
             self.__checkResponse(response, "Failed to get access token")
         except Exception as e:
@@ -84,6 +88,18 @@ inputContent, translatedInputContent)
         for token in tokens:
             content = "{0}'{1}'.".format(content, token.split(",")[0])
         return content[:-1].strip().lower()
+
+    def __getCredentials(self):
+        credentials = None
+        path = self.getPluginParamValue("Credentials")
+        if not os.path.isfile(path):
+            self.raiseException("Missing Azure credential file: {0}".format(path))
+        try:
+            with open(path, "r",  encoding="utf8") as fd:
+                credentials = json.load(fd)
+        except IOError as e:
+            self.raiseException(e)
+        return credentials
 
     def __getInputTranslationStr(self, inputContent, accessToken):
         return self.__getTranslation(inputContent, accessToken)

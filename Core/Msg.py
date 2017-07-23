@@ -4,6 +4,11 @@ import sys
 class Msg():
 
     @staticmethod
+    def flush(flushFlag=True):
+        sys.stdout.flush()
+        sys.stderr.flush()
+
+    @staticmethod
     def show(msg):
         sys.stdout.write("\nCOCOSCATS: {0}\n".format(msg))
 

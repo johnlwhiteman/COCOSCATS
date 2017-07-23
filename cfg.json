@@ -42,6 +42,7 @@
         "Version": "1.0.0",
         "Author" : "Cocoscats",
         "Description": "An IO plugin to handle simple HTML files",
+        "Link": [],
         "Method":
         [
             {
@@ -56,6 +57,7 @@
         "Version": "1.0.0",
         "Author" : "Cocoscats",
         "Description": "An IO plugin to handle simple JSON files",
+        "Link": [],
         "Method":
         [
             {
@@ -73,6 +75,7 @@
         "Version": "1.0.0",
         "Author" : "Cocoscats",
         "Description": "An IO plugin to handle simple text files",
+        "Link": [],
         "Method":
         [
             {
@@ -91,6 +94,8 @@
         "Version": "1.0.0",
         "Author" : "Wikipedia and Sam Brightman",
         "Description": "An IO plugin to interact with the Wikipedia API",
+        "Link": ["https://www.wikipedia.org/",
+                 "https://github.com/sambrightman/wiki-api"],
         "Method":
         [
             {
@@ -114,6 +119,7 @@
         "Version": "1.0.0",
         "Author" : "Cocoscats",
         "Description": "An IO plugin to handle simple XML files",
+        "Link": [],
         "Method":
         [
             {
@@ -128,6 +134,7 @@
         "Version": "1.0.0",
         "Author" : "NLTK",
         "Description": "An analyzer plugin that uses the NLTK library",
+        "Links": ["http://www.nltk.org/"],
         "Method":
         [
             {
@@ -147,15 +154,14 @@
         "Version": "1.0.0",
         "Author" : "Microsoft",
         "Description": "A translation plugin that uses Microsoft's Azure Cloud Translator",
+        "Links": ["https://azure.microsoft.com"],
         "Method":
         [
             {
                 "Name": "runTranslate",
                 "Params":
                 {
-                    "AccessKey": "",
-                    "ClientID": "",
-                    "Credentials": "/Security/AzureCredentials.json",
+                    "Credentials": "./Security/AzureCredentials.json",
                     "L1": "en",
                     "L2": "id",
                     "SearchOneByOne": "False"
@@ -169,28 +175,23 @@
         "Path": "./Database/Cocoscats.db",
         "Enable": "True",
         "Debug": "False",
-        "Rebuild": "True"
+        "Rebuild": "Fakse"
     },
     "Web":
     {
         "Browser":
         [
-            "default",
             "C:/Program Files (x86)/Mozilla Firefox/firefox.exe %s",
-            "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s"
+            "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s",
+            "default"
         ],
         "Debug": "True",
         "Host": "127.0.0.1",
         "Port": "12345",
+        "RefreshCertificate": "False",
+        "RefreshPassword": "True",
         "Reloader": "False",
-        "Security":
-        {
-            "AlwaysGenerate": "False",
-            "Certificate": "./Security/CocoscatCertificate.pem",
-            "PublicKey": "./Security/CocoscatPublicKey.pem",
-            "PrivateKey": "./Security/CocoscatPrivateKey.pem",
-            "UseAuthentication": "False",
-            "UseHttps": "False"
-        }
+        "UseAuthentication": "True",
+        "UseHttps": "True"
     }
 }

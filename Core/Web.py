@@ -18,8 +18,9 @@ class WebSecurity(bottle.ServerAdapter):
     def __init__(self, *args, **kwargs):
         super(WebSecurity, self).__init__(*args, **kwargs)
         self._server = None
-        self.privateKeyPath = None
-        self.certificatePath = None
+        self.__certificatePath = "./Security/Certificate.pem"
+        self.__privateKeyPath = "./Security/PrivateKey.pem"
+        self.__publicKeyPath = "./Security/PublicKey.pem"
 
     def run(self, handler):
         if self.quiet:
@@ -29,29 +30,91 @@ class WebSecurity(bottle.ServerAdapter):
         srv = make_server(self.host, self.port, handler, **self.options)
         srv.socket = ssl.wrap_socket (
             srv.socket,
-            keyfile = self.privateKeyPath,
-            certfile = self.certificatePath,
+            keyfile = self.__privateKeyPath,
+            certfile = self.__certificatePath,
             server_side = True)
         srv.serve_forever()
 
     def setupCertificate(self):
-        certificatePath = Web.cocoscats.cfg["Web"]["Security"]["Certificate"]
-        publicKeyPath = Web.cocoscats.cfg["Web"]["Security"]["PublicKey"]
-        privateKeyPath = Web.cocoscats.cfg["Web"]["Security"]["PrivateKey"]
-        if Text.isTrue(Web.cocoscats.cfg["Web"]["Security"]["AlwaysGenerate"]):
-            File.deletes([certificatePath, publicKeyPath, privateKeyPath])
-        if not File.exist([certificatePath, publicKeyPath, privateKeyPath]):
-            Security.generateKeysAndCertificate(privateKeyPath, publicKeyPath, certificatePath)
+        if not Text.isTrue(Web.cocoscats.cfg["Web"]["UseHttps"]):
+            return
+        if Text.isTrue(Web.cocoscats.cfg["Web"]["RefreshCertificate"]):
+            File.deletes([self.__certificatePath,
+                          self.__publicKeyPath,
+                          self.__privateKeyPath])
+        if not File.exist([self.__certificatePath,
+                           self.__publicKeyPath,
+                           self.__privateKeyPath]):
+            Security.generateKeysAndCertificate(self.__privateKeyPath,
+                                                self.__publicKeyPath,
+                                                self.__certificatePath)
+
+    def setupPassword(self):
+        if not Text.isTrue(Web.cocoscats.cfg["Web"]["UseAuthentication"]):
+            return
+        passwordPath = "./Security/Password.txt"
+        if Text.isTrue(Web.cocoscats.cfg["Web"]["RefreshPassword"]):
+            File.delete(passwordPath)
+        if not File.exists(passwordPath):
+            Security.createPasswordFile(passwordPath)
 
 class Web(object):
 
     cocoscats = None
+    useHttps = True
+    useAuthentication = True
+
+    def run(cocoscats):
+        Web.cocoscats = cocoscats
+        Web.useHttps = Text.isTrue(Web.cocoscats.cfg["Web"]["UseHttps"])
+        Web.useAuthentication = Text.isTrue(Web.cocoscats.cfg["Web"]["UseAuthentication"])
+        if Web.useHttps:
+            Web.url = "https://{0}:{1}/".format(Web.cocoscats.cfg["Web"]["Host"],
+                                                Web.cocoscats.cfg["Web"]["Port"])
+        else:
+            Web.url = "http://{0}:{1}/".format(Web.cocoscats.cfg["Web"]["Host"],
+                                                Web.cocoscats.cfg["Web"]["Port"])
+        if Web.useHttps:
+            server = WebSecurity(host=Web.cocoscats.cfg["Web"]["Host"],
+                                 port=Web.cocoscats.cfg["Web"]["Port"])
+            server.setupCertificate()
+            server.setupPassword()
+            threading.Thread(target=bottle.run,
+                kwargs=dict(
+                debug = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Debug"]),
+                reloader = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Reloader"]),
+                server = server
+                )).start()
+        else:
+            threading.Thread(target=bottle.run,
+                kwargs=dict(
+                debug = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Debug"]),
+                host = Web.cocoscats.cfg["Web"]["Host"],
+                port = Web.cocoscats.cfg["Web"]["Port"],
+                reloader = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Reloader"])
+                )).start()
+        for client in Web.cocoscats.cfg["Web"]["Browser"]:
+            if Text.isNothing(client) or client == "default":
+                if webbrowser.open(Web.url):
+                    break
+            else:
+                if webbrowser.get(client).open(Web.url):
+                    break
+
+class WebApi(object):
+
+    @bottle.route("/Api/GetPlugins/<pluginType>")
+    def getPlugins(pluginType):
+        return Web.cocoscats.getPlugins(pluginType)
+
+
+class WebApp(object):
+
     inputTainted = False
     analyzerTainted = False
     translatorTainted = False
     outputTainted = False
 
-    # Get Methods ###########################
     @staticmethod
     def getEditor(content):
         replace = {"content": content}
@@ -114,8 +177,6 @@ class Web(object):
             replace["View"] = """<span id="navTitle">View</span>"""
         return bottle.template("Web/Tpl/Navigation.tpl", replace)
 
-
-    # Set Methods ###########################
     @bottle.get("/Web/Css/<path:re:.*\.css>")
     def __setCssPath(path):
         return bottle.static_file(path, root="Web/Css")
@@ -144,61 +205,26 @@ class Web(object):
             bottle.response.set_header("Set-Cookie", "name=value; Secure")
             bottle.response.set_header("Strict-Transport-Security", "max-age=31536000")
 
-    def run(cocoscats):
-        Web.cocoscats = cocoscats
-        Web.useHttps = Text.isTrue(Web.cocoscats.cfg["Web"]["Security"]["UseHttps"])
-        schema = None
-        if Web.useHttps:
-            server = WebSecurity(host=Web.cocoscats.cfg["Web"]["Host"],
-                                 port=Web.cocoscats.cfg["Web"]["Port"])
-            server.setupCertificate()
-            threading.Thread(target=bottle.run,
-                kwargs=dict(
-                debug = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Debug"]),
-                reloader = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Reloader"]),
-                server = server
-                )).start()
-            schema = "https"
-        else:
-            threading.Thread(target=bottle.run,
-                kwargs=dict(
-                debug = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Debug"]),
-                host = Web.cocoscats.cfg["Web"]["Host"],
-                port = Web.cocoscats.cfg["Web"]["Port"],
-                reloader = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Reloader"])
-                )).start()
-            schema = "http"
-        url = "{0}://{1}:{2}/".format(schema,
-                                      Web.cocoscats.cfg["Web"]["Host"],
-                                      Web.cocoscats.cfg["Web"]["Port"])
-        for client in cocoscats.cfg["Web"]["Browser"]:
-            if Text.isNothing(client) or client == "default":
-                if webbrowser.open(url):
-                    break
-            else:
-                if webbrowser.get(client).open(url):
-                    break
-
     @bottle.route("/Analyzer")
     @bottle.route("/Analyzer/<action>")
     @bottle.route("/Analyzer/<action>", method="POST")
     def __runAnalyzer(action=None):
-        header = Web.getHeader("Analyzer")
-        footer = Web.getFooter()
-        navigation = Web.getNavigation("Analyzer", 2)
+        header = WebApp.getHeader("Analyzer")
+        footer = WebApp.getFooter()
+        navigation = WebApp.getNavigation("Analyzer", 2)
         path = Web.cocoscats.frameworkParams["analyzerPath"]
         if not action is None and action == "Save":
             File.setContent(path, bottle.request.forms.Content)
-            Web.analyzerTainted = True
-            Web.translatorTainted = False
-            Web.outputTainted = False
+            WebApp.analyzerTainted = True
+            WebApp.translatorTainted = False
+            WebApp.outputTainted = False
             return "Successfully saved to '" + path + "'"
         content = None
-        if Web.analyzerTainted:
+        if WebApp.analyzerTainted:
             content = File.getContent(path)
         else:
             content = Web.cocoscats.runAnalyzer()
-        editor = Web.getEditor(content)
+        editor = WebApp.getEditor(content)
         body = """{0}{1}""".format(navigation, editor)
         return "{0}{1}{2}".format(header, body, footer)
 
@@ -206,23 +232,23 @@ class Web(object):
     @bottle.route("/Input/<action>")
     @bottle.route("/Input/<action>", method="POST")
     def __runInput(action=None):
-        header = Web.getHeader("Input")
-        footer = Web.getFooter()
-        navigation = Web.getNavigation("Input", 1)
+        header = WebApp.getHeader("Input")
+        footer = WebApp.getFooter()
+        navigation = WebApp.getNavigation("Input", 1)
         path = Web.cocoscats.frameworkParams["inputPath"]
         if not action is None and action == "Save":
             File.setContent(path, bottle.request.forms.Content)
-            Web.inputTainted = True
-            Web.analyzerTainted = False
-            Web.translatorTainted = False
-            Web.outputTainted = False
+            WebApp.inputTainted = True
+            WebApp.analyzerTainted = False
+            WebApp.translatorTainted = False
+            WebApp.outputTainted = False
             return "Successfully saved to '" + path + "'"
         content = None
-        if Web.inputTainted:
+        if WebApp.inputTainted:
             content = File.getContent(path)
         else:
             content = Web.cocoscats.runInput()
-        editor = Web.getEditor(content)
+        editor = WebApp.getEditor(content)
         body = """{0}{1}""".format(navigation, editor)
         return "{0}{1}{2}".format(header, body, footer)
 
@@ -230,54 +256,54 @@ class Web(object):
     @bottle.route("/Output/<action>")
     @bottle.route("/Output/<action>", method="POST")
     def __runOutput(action=None):
-        header = Web.getHeader("Output")
-        footer = Web.getFooter()
-        navigation = Web.getNavigation("Output", 4)
+        header = WebApp.getHeader("Output")
+        footer = WebApp.getFooter()
+        navigation = WebApp.getNavigation("Output", 4)
         path = Web.cocoscats.frameworkParams["outputPath"]
         if not action is None and action == "Save":
             File.setContent(path, bottle.request.forms.Content)
-            Web.outputTainted = True
+            WebApp.outputTainted = True
             Web.cocoscats.runDatabase()
             return "Successfully saved to '" + path + "'"
         content = None
-        if Web.outputTainted:
+        if WebApp.outputTainted:
             content = File.getContent(path)
         else:
             content = Web.cocoscats.runOutput()
             Web.cocoscats.runDatabase()
-        editor = Web.getEditor(content)
+        editor = WebApp.getEditor(content)
         body = """{0}{1}""".format(navigation, editor)
         return "{0}{1}{2}".format(header, body, footer)
 
     @staticmethod
     @bottle.route("/Reset")
     def __runReset():
-        Web.inputTainted = False
-        Web.analyzerTainted = False
-        Web.translatorTainted = False
-        Web.outputTainted = False
+        WebApp.inputTainted = False
+        WebApp.analyzerTainted = False
+        WebApp.translatorTainted = False
+        WebApp.outputTainted = False
         Web.cocoscats.purgeContent()
-        bottle.redirect("/")
+        bottle.redirect(Web.url)
 
     @bottle.route("/Translator")
     @bottle.route("/Translator/<action>")
     @bottle.route("/Translator/<action>", method="POST")
     def __runTranslator(action=None):
-        header = Web.getHeader("Translator")
-        footer = Web.getFooter()
-        navigation = Web.getNavigation("Translator", 3)
+        header = WebApp.getHeader("Translator")
+        footer = WebApp.getFooter()
+        navigation = WebApp.getNavigation("Translator", 3)
         path = Web.cocoscats.frameworkParams["translatorPath"]
         if not action is None and action == "Save":
             File.setContent(path, bottle.request.forms.Content)
-            Web.translatorTainted = True
-            Web.outputTainted = False
+            WebApp.translatorTainted = True
+            WebApp.outputTainted = False
             return "Successfully saved to '" + path + "'"
         content = None
-        if Web.translatorTainted:
+        if WebApp.translatorTainted:
             content = File.getContent(path)
         else:
             content = Web.cocoscats.runTranslator()
-        editor = Web.getEditor(content)
+        editor = WebApp.getEditor(content)
         body = """{0}{1}""".format(navigation, editor)
         return "{0}{1}{2}".format(header, body, footer)
 
@@ -285,9 +311,9 @@ class Web(object):
     @bottle.route("/View/<action>")
     @bottle.route("/View/<action>", method="POST")
     def __runView(action=None):
-        header = Web.getHeader("View")
-        footer = Web.getFooter()
-        navigation = Web.getNavigation("View", 4)
+        header = WebApp.getHeader("View")
+        footer = WebApp.getFooter()
+        navigation = WebApp.getNavigation("View", 4)
         body = """{0}""".format(navigation)
         return "{0}{1}{2}".format(header, body, footer)
 
@@ -295,29 +321,15 @@ class Web(object):
     @bottle.route("/Documentation")
     def __showDocumentation():
         return """{0}{1}{2}""".format(
-            Web.getHeader("Documentation"),
+            WebApp.getHeader("Documentation"),
             bottle.template("Web/Tpl/Documentation.tpl", {}),
-            Web.getFooter())
+            WebApp.getFooter())
 
     @bottle.route("/")
     @bottle.route("/<path>")
     def __showIndex(path="index.html"):
-        return """{0}{1}{2}""".format(
-            Web.getHeader("Welcome to Cocoscats"),
-            bottle.template("Web/Tpl/Index.tpl", {}),
-            Web.getFooter())
-
-
         #return bottle.static_file(path, root="Web/html")
-
-
-class WebApi(object):
-
-    @bottle.route("/Api/GetPlugins/<pluginType>")
-    def __getPlugins(pluginType):
-        return Web.cocoscats.getPlugins(pluginType)
-
-
-class WebApp(object):
-    pass
-    # The actual content goes here
+        return """{0}{1}{2}""".format(
+            WebApp.getHeader("Welcome to Cocoscats"),
+            bottle.template("Web/Tpl/Index.tpl", {}),
+            WebApp.getFooter())

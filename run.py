@@ -37,5 +37,5 @@ if __name__ == "__main__":
         else:
             Error.handleError("You must specify either -C or -W to run in cli or web mode respectively", True)
     except Exception as e:
-        Error.handleException(e, True)
+        Error.handleException(e, True, True)
     Msg.show("Script Completed")

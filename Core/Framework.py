@@ -24,7 +24,7 @@ class Framework():
             Error.handleException(
                 "Unknown class/method {0}/{1}".format(
                     pluginInstance.__class__,
-                    methodName), True)
+                    methodName), True, True)
         return method
 
     @staticmethod

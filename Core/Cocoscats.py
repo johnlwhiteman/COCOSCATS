@@ -48,7 +48,7 @@ class Cocoscats(Cfg):
             Error.handleException(
                 "Something bad happened: {0}/{1}\n{2}".format(
                     pluginInstance.__class__,
-                    pluginMethod, str(e)), True)
+                    pluginMethod, str(e)), True, True)
         return method
 
     def initialize(self, cfgPath):

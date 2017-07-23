@@ -10,9 +10,10 @@ class Error():
             sys.stderr.flush()
             sys.exit(1)
 
-    def handleException(msg, abortFlag=True):
+    def handleException(msg, showStackTraceFlag=True, abortFlag=True):
         Msg.showError(str(msg))
-        traceback.print_exc()
+        if showStackTraceFlag:
+            traceback.print_exc()
         if abortFlag:
             sys.stderr.flush()
             sys.exit(1)

@@ -94,6 +94,9 @@ class Interface(object):
             return self.__workflowPluginParams["Target"]
         return None
 
+    def handleException(msg, showStackTraceFlag=True, abortFlag=True):
+        Error.handleException(msg, showStackTraceFlag, abortFlag)
+
     def raiseException(self, msg):
         Error.raiseException(msg)
 
