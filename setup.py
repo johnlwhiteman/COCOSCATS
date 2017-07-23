@@ -25,7 +25,7 @@ setup(
         "Topic :: Education",
         "Topic :: Text Processing"
     ],
-    install_requires = ["BingTranslator", "bottle", "nltk", "numpy", "passlib", "pony", "wikiapi"],
+    install_requires = ["beaker", "BingTranslator", "bottle", "nltk", "numpy", "passlib", "pony", "requests", "wikiapi"],
     package_data = {"":["README.md"]}
 )
 nltk.download("averaged_perceptron_tagger")

@@ -23,10 +23,11 @@ def deleteProtectedPaths(cfgPath):
         cfg = Cfg()
         cfg.load(cfgPath)
         paths = [
-            cfg.cfg["Database"]["Name"],
-            cfg.cfg["Web"]["Security"]["Certificate"],
-            cfg.cfg["Web"]["Security"]["PublicKey"],
-            cfg.cfg["Web"]["Security"]["PrivateKey"]
+            cfg.cfg["Database"]["Path"],
+            "./Security/Certificate.pem",
+            "./Security/Password.json",
+            "./Security/PrivateKey.pem",
+            "./Security/PublicKey.pem"
         ]
         deletePaths(paths)
     except Exception as e:

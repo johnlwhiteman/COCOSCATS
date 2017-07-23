@@ -100,7 +100,7 @@ class File():
                 Directory.make(File.getDirectory(path))
             if asJson:
                 with open(path, "w", encoding="utf8") as fd:
-                    json.dump(sample, fd)
+                    json.dump(content, fd)
             elif asBytes:
                 with open(path, "wb") as fd:
                     fd.write(content)

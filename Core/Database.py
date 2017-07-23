@@ -19,11 +19,11 @@ class Database():
     ODB = orm.Database()
 
     class Table():
-        Project = None
-        Input = None
-        Analyzer = None
-        Translator = None
-        Output = None
+        Project = NotImplemented
+        Input = NotImplemented
+        Analyzer = NotImplemented
+        Translator = NotImplemented
+        Output = NotImplemented
 
     @staticmethod
     def commit():
@@ -190,8 +190,8 @@ class Database():
     @staticmethod
     def setPath(path):
         Database.path = File.getAbsPath(path)
-        Database.name = File.getName(path)
-        Database.directory = File.getDirectory(path)
+        Database.name = File.getName(Database.path)
+        Database.directory = File.getDirectory(Database.path)
 
 class Project(Database.ODB.Entity):
     ID = orm.PrimaryKey(str)

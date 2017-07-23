@@ -19,6 +19,8 @@ class Text():
 
     @staticmethod
     def isTrue(something):
+        if Text.isNothing(something):
+            return False
         return Text.toTrueOrFalse(something) == True
 
     @staticmethod

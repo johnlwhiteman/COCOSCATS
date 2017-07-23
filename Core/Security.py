@@ -6,6 +6,7 @@ from passlib.hash import pbkdf2_sha512
 import random
 import socket
 import sys
+import uuid
 from Core.Error import Error
 from Core.File import File
 from Core.Msg import Msg
@@ -17,14 +18,20 @@ from Core.Text import Text
 class Security():
 
     @staticmethod
+    def authenticate(path, password=None):
+        if password == None:
+            password = Security.promptForPassword(False)
+        return Security.verifyPasswordByFile(password, path)
+
+    @staticmethod
     def createPasswordFile(path):
+        File.delete(path)
         p = Security.promptForPassword(True)
         Msg.flush()
         Msg.show("Thanks ... please wait")
         Msg.flush()
         h = Security.hashAndSaltPassword(p)
-        File.delete(path)
-        File.setContent(path, h)
+        File.setContent(path, {"Password": h}, asJson=True)
 
     @staticmethod
     def generateKeysAndCertificate(privateKeyPath, publicKeyPath, certificatePath):
@@ -56,6 +63,10 @@ class Security():
             certificatePath,
             OpenSSL.crypto.dump_certificate(
                 OpenSSL.crypto.FILETYPE_PEM, certificate), asBytes=True, mkdirs=True)
+
+    @staticmethod
+    def getRandomToken():
+        return  uuid.uuid4()
 
     @staticmethod
     def hashAndSaltPassword(password):
@@ -94,4 +105,4 @@ class Security():
 
     @staticmethod
     def verifyPasswordByFile(password, path):
-        return Security.verifyPassword(password, File.getContent(passwordPath))
+        return Security.verifyPassword(password, File.getContent(path, asJson=True)["Password"])

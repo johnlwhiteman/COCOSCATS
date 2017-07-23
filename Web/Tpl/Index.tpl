@@ -1,3 +1,4 @@
+<h1>Welcome to COCOSCATS</h1>
 <h2>Let's Create Some Content</h2>
 <table>
 <tr>

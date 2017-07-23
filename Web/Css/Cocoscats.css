@@ -40,6 +40,14 @@ textarea {
   font-weight: inherit;
 }
 
+.csDiv {
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  text-align: left;
+}
+
 .errMsg {
   color: red;
   font-family: inherit;

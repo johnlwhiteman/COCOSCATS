@@ -70,6 +70,23 @@
         ]
         },
         {
+        "Name": "Quizlet",
+        "Type": "IO",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "An IO plugin that interacts with Quizlet web services",
+        "Link": ["https://quizlet.com"],
+        "Method":
+        [
+            {
+                "Name": "runOutput",
+                "Params":
+                {
+                }
+            }
+        ]
+        },
+        {
         "Name": "TextFile",
         "Type": "IO",
         "Version": "1.0.0",
@@ -175,7 +192,7 @@
         "Path": "./Database/Cocoscats.db",
         "Enable": "True",
         "Debug": "False",
-        "Rebuild": "Fakse"
+        "Rebuild": "True"
     },
     "Web":
     {
@@ -189,7 +206,7 @@
         "Host": "127.0.0.1",
         "Port": "12345",
         "RefreshCertificate": "False",
-        "RefreshPassword": "True",
+        "RefreshPassword": "False",
         "Reloader": "False",
         "UseAuthentication": "True",
         "UseHttps": "True"

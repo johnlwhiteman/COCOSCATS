@@ -29,7 +29,12 @@ class Cfg(object):
                 return plugin
         Error.raiseException("Plugin {0}:{1} not found.".format(pluginType, pluginName))
 
-    def getPlugins(self, pluginType):
+    def getPlugins(self):
+        if len(self.cfg["Plugin"]) < 1:
+            return """{"Plugin:":[]}"""
+        return json.loads(json.dumps({"Plugin": self.cfg["Plugin"]}))
+
+    def getPluginsByType(self, pluginType):
         plugins = []
         if pluginType == "Input" or pluginType == "Output":
             pluginType = "IO"
@@ -122,7 +127,7 @@ class Cfg(object):
         for pluginType in self.pluginTypes:
             self.__verifyCfgPlugins(
                 pluginType,
-                self.getPlugins(pluginType),
+                self.getPluginsByType(pluginType),
                 Framework.getPluginFiles(pluginType)
         )
 
