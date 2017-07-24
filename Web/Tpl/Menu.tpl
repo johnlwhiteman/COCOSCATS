@@ -1,1 +1,1 @@
-<a href="/">Home</a> | <a href="/Reset">Reset</a> | <a href="/Documentation">Documentation</a> | <a href="/Administration">Administration</a> {{!LoginStatus}}
+<a href="/">Home</a> | <a href="/Api">API</a> | <a href="/Documentation">Documentation</a> | <a href="/Administration">Administration</a> {{!LoginStatus}}

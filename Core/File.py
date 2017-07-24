@@ -76,10 +76,10 @@ class File():
         content = None
         try:
             if asJson:
-                with open(path, "r",  encoding="utf8") as fd:
+                with open(path, "r",  encoding="utf-8") as fd:
                     content = json.load(fd)
             else:
-                with open(path, "r",  encoding="utf8") as fd:
+                with open(path, "r",  encoding="utf-8") as fd:
                     content = fd.read()
         except IOError as e:
             Error.handleException(e, True, True)
@@ -99,13 +99,13 @@ class File():
             if mkdirs:
                 Directory.make(File.getDirectory(path))
             if asJson:
-                with open(path, "w", encoding="utf8") as fd:
+                with open(path, "w", encoding="utf-8") as fd:
                     json.dump(content, fd)
             elif asBytes:
                 with open(path, "wb") as fd:
                     fd.write(content)
             else:
-                with open(path, "w", encoding="utf8") as fd:
+                with open(path, "w", encoding="utf-8") as fd:
                     fd.write(content)
         except IOError as e:
             Error.handleException(e, True, True)

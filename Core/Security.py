@@ -1,5 +1,7 @@
+import base64
 import datetime
 import getpass
+import hashlib
 import OpenSSL
 import os
 from passlib.hash import pbkdf2_sha512
@@ -14,6 +16,7 @@ from Core.Text import Text
 
 # Reference: https://pyopenssl.org/en/stable/api/crypto.html
 # Reference: https://skippylovesmalorie.wordpress.com/2010/02/12/how-to-generate-a-self-signed-certificate-using-pyopenssl/
+# Reference: https://tenzer.dk/generating-subresource-integrity-checksums/
 # openssl req -new -x509 -keyout server.pem -out server.pem -days 365 -nodes
 class Security():
 
@@ -67,6 +70,12 @@ class Security():
     @staticmethod
     def getRandomToken():
         return  uuid.uuid4()
+
+    @staticmethod
+    def getSubresourceIntegrityHash(path):
+        content = File.getContent(path)
+        hash = hashlib.sha512(content.encode("utf-8")).digest()
+        return "sha512-{}".format(base64.b64encode(hash).decode())
 
     @staticmethod
     def hashAndSaltPassword(password):

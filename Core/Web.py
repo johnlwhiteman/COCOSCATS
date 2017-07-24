@@ -9,7 +9,9 @@ import threading
 import time
 import webbrowser
 from wsgiref.simple_server import make_server, WSGIRequestHandler
+from Core.Directory import Directory
 from Core.File import File
+from Core.Framework import Framework
 from Core.Security import Security
 from Core.Text import Text
 
@@ -23,6 +25,16 @@ class WebSecurity(bottle.ServerAdapter):
         self.__certificatePath = "./Security/Certificate.pem"
         self.__privateKeyPath = "./Security/PrivateKey.pem"
         self.__publicKeyPath = "./Security/PublicKey.pem"
+
+    @staticmethod
+    def getSubresourceIntegrityHashes(displayValues=False):
+        sriHashes = {}
+        webDir = Framework.getWebDir()
+        for subDir in ["Css", "Js"]:
+            for path in Directory.getFiles("{0}/{1}".format(webDir, subDir)):
+                sriHashes[path] = Security.getSubresourceIntegrityHash(path)
+                if displayValues:
+                    print("\n{0}\n{1}\n".format(path, sriHashes[path]))
 
     def run(self, handler):
         if self.quiet:
@@ -77,6 +89,9 @@ class Web(object):
             "session.cookie_expires": 300,
             "session.auto": True
         }
+        if Text.isTrue(Web.cocoscats.cfg["Web"]["Debug"]):
+            WebSecurity.getSubresourceIntegrityHashes(True)
+
         if Web.useHttps:
             Web.schema = "https"
             Web.url = "{0}://{1}:{2}/".format(Web.schema,
@@ -106,6 +121,8 @@ class Web(object):
                 port = Web.cocoscats.cfg["Web"]["Port"],
                 reloader = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Reloader"])
                 )).start()
+        sys.stdout.flush()
+        sys.stderr.flush()
         for client in Web.cocoscats.cfg["Web"]["Browser"]:
             if Text.isNothing(client) or client == "default":
                 if webbrowser.open(Web.url):
@@ -113,7 +130,6 @@ class Web(object):
             else:
                 if webbrowser.get(client).open(Web.url):
                     break
-
 
 class WebApp(object):
 
@@ -169,7 +185,7 @@ class WebApp(object):
             "Analyzer": "Analyzer",
             "Translator": "Translator",
             "Output": "Output",
-            "View": "View"
+            "Demo": "Demo"
         }
         if title == "Input":
             replace["Input"] = """<span id="navTitle">Input</span>"""
@@ -188,13 +204,13 @@ class WebApp(object):
             replace["Analyzer"] = """<a href="/Analyzer">Analyzer</a>"""
             replace["Translator"] = """<a href="/Translator">Translator</a>"""
             replace["Output"] = """<span id="navTitle">Output</span>"""
-            replace["View"] = """<a href="/View">View</a>"""
-        elif title == "View":
+            replace["Demo"] = """<a href="/Demo">Demo</a>"""
+        elif title == "Demo":
             replace["Input"] = """<a href="/Input">Input</a>"""
             replace["Analyzer"] = """<a href="/Analyzer">Analyzer</a>"""
             replace["Translator"] = """<a href="/Translator">Translator</a>"""
             replace["Output"] = """<a href="/Output">Output</a>"""
-            replace["View"] = """<span id="navTitle">View</span>"""
+            replace["Demo"] = """<span id="navTitle">Demo</span>"""
         return bottle.template("Web/Tpl/Navigation.tpl", replace)
 
     @staticmethod
@@ -323,14 +339,14 @@ class WebApp(object):
         body = """{0}{1}""".format(navigation, editor)
         return "{0}{1}{2}".format(header, body, footer)
 
-    @bottle.route("/View")
-    @bottle.route("/View/<action>")
-    @bottle.route("/View/<action>", method="POST")
-    def __runView(action=None):
+    @bottle.route("/Demo")
+    @bottle.route("/Demo/<action>")
+    @bottle.route("/Demo/<action>", method="POST")
+    def __runDemo(action=None):
         WebApp.checkAuthentication()
-        header = WebApp.getHeader("View")
+        header = WebApp.getHeader("Demo")
         footer = WebApp.getFooter()
-        navigation = WebApp.getNavigation("View", 4)
+        navigation = WebApp.getNavigation("Demo", 4)
         body = """{0}""".format(navigation)
         return "{0}{1}{2}".format(header, body, footer)
 
@@ -382,6 +398,15 @@ class WebApp(object):
         return """{0}{1}{2}""".format(
             WebApp.getHeader("Documentation"),
             body,
+            WebApp.getFooter())
+
+    @bottle.route("/Api")
+    @bottle.route("/Apis")
+    def __showApi():
+        WebApp.checkAuthentication()
+        return """{0}{1}{2}""".format(
+            WebApp.getHeader("API"),
+            bottle.template("Web/Tpl/Api.tpl", {}),
             WebApp.getFooter())
 
     @bottle.route("/Doc")

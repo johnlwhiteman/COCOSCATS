@@ -29,5 +29,17 @@ class Directory():
         return path.replace('\\', '/')
 
     @staticmethod
+    def getFiles(path, includeDirectory=True):
+        paths = []
+        for file in os.listdir(path):
+            dirFile = os.path.join(path, file).replace('\\', '/')
+            if os.path.isfile(dirFile):
+                if includeDirectory:
+                    paths.append(dirFile)
+                else:
+                    paths.append(file)
+        return paths
+
+    @staticmethod
     def make(path):
         os.makedirs(path, exist_ok=True)

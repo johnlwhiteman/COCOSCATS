@@ -9,6 +9,6 @@
 <td>|</td>
 <td>{{!Output}}</td>
 <td>|</td>
-<td>{{!View}}</td>
+<td>{{!Demo}}</td>
 </tr>
 </table>

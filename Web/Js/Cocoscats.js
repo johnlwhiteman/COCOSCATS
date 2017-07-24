@@ -1,20 +1,8 @@
 "use strict";
-
 $( document ).ready(function() {
-    $("#cfgSavex").click( function() {
-        $.ajax({
-            type: "POST",
-            url: "/Configuration/Save",
-            data: {cfgContent: $("#cfgContent").val()},
-            contentType: "application/json; charset=utf-8",
-            success: function(response) {
-                $("#cfgMsg").html('<span class="okMsg">Save successful</span>');
-                setTimeout('$("#cfgMsg").html("&nbsp;");', 1000);
-            },
-            error: function(response, txtStatus, errMsg) {
-                $("#cfgMsg").html('<span class="errMsg">Save failed: ' + errMsg + '</span>');
-            }
-        });
+
+    $("#editorReset").click( function() {
+        window.location.href="/Reset";
     });
 
     $("#editorSave").click( function() {
@@ -32,4 +20,5 @@ $( document ).ready(function() {
             }
         });
     });
+
 });
