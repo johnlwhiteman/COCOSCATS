@@ -8,7 +8,9 @@ from Core.File import File
 PATHS = ["./COCOSCATS.egg-info", "./build",
          "./Core/__pycache__",  "./dist",
          "./Plugin/__pycache__", "./Plugin/Analyzer/__pycache__",
-         "./Plugin/IO/__pycache__", "./Plugin/Translator/__pycache__",
+         "./Plugin/Demo/__pycache__", "./Plugin/IO/__pycache__",
+         "./Plugin/Translator/__pycache__",
+         "./Demo/Simple/houseTranslated.txt",
          "./Demo/Simple/houseTranslated.html"]
 
 def deletePaths(paths):
@@ -50,6 +52,6 @@ if __name__ == "__main__":
         cfgPath = args.cfg
     if not os.path.isfile(cfgPath):
         Error.handleError("Can't find JSON configuration file: {0}".format(cfgPath), True)
-    deletePaths(PATHS)
     if args.force:
         deleteProtectedPaths(cfgPath)
+    deletePaths(PATHS)

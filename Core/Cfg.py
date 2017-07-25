@@ -1,3 +1,4 @@
+import copy
 import glob
 import inspect
 import json
@@ -17,11 +18,16 @@ class Cfg(object):
         self.cfgPath = None
         self.cfg = None
         self.installDir = Framework.getInstallDir()
-        self.pluginTypes = ["IO", "Analyzer", "Translator"]
+        self.pluginTypes = ["IO", "Analyzer", "Translator", "Demo"]
+        self.pluginTypeAlias = \
+            {"Input": "IO", "Analyzer": "Analyzer", "Translator": "Translator", "Output": "IO", "Demo": "Demo"}
 
     def checkIfCfgLoaded(self):
         if self.cfg is None:
             Error.raiseException("Missing cfg file. Did you load it?")
+
+    def getCfg(self):
+        return copy.deepcopy(self.cfg)
 
     def getPlugin(self, pluginType, pluginName):
         for plugin in self.cfg["Plugin"]:
@@ -63,15 +69,30 @@ class Cfg(object):
     def getWorkflow(self):
         return self.cfg["Workflow"]
 
+    def getWorkflowDemoPluginChoices(self):
+        choices = []
+        for i in range(0, len(self.cfg["Workflow"]["Demo"]["Plugin"])):
+            self.cfg["Workflow"]["Demo"]["Plugin"][i]
+            self.cfg["Workflow"]["Demo"]["Method"][i]
+            choices.append(
+                {"Name": self.cfg["Workflow"]["Demo"]["Plugin"][i],
+                 "Method": self.cfg["Workflow"]["Demo"]["Method"][i]})
+        if len(choices) < 1:
+            return None
+        return choices
+
+    def getWorkflowDemoPluginCount(self):
+        return len(self.cfg["Workflow"]["Demo"]["Plugin"])
+
     def getWorkflowInputSource(self):
         source = self.getWorkflowPlugin("Input")["Source"]
-        if source is None or source.strip() == "":
+        if Text.isNothing(source):
             return None
         return source
 
     def getWorkflowOutputTarget(self):
         target = self.getWorkflowPlugin("Output")["Target"]
-        if target is None or target.strip() == "":
+        if Text.isNothing(target):
             return None
         return target
 
@@ -81,16 +102,32 @@ class Cfg(object):
         plugin["Alias"] = pluginType
         if pluginType == "Input" or pluginType == "Output":
             plugin["Alias"] = "IO"
+        plugin["__workflowSourcePath__"] = self.getWorkflowSourcePath()
+        plugin["__workflowTargetPath__"] = self.getWorkflowTargetPath()
         return plugin
 
-    def isTrue(self, something):
-        return something is not None and something.strip().lower() == "true"
+    def getWorkflowSourcePath(self):
+        if Text.isNothing(self.cfg["Workflow"]["Input"]["Source"]):
+            return None
+        return self.cfg["Workflow"]["Input"]["Source"]
+
+    def getWorkflowTargetPath(self):
+        if Text.isNothing(self.cfg["Workflow"]["Output"]["Target"]):
+            return None
+        return self.cfg["Workflow"]["Output"]["Target"]
+
+    def isWorkflowDemoEnabled(self):
+        return Text.isTrue(self.cfg["Workflow"]["Demo"]["Enable"])
 
     def isWorkflowEditTrue(self, pluginType):
-        return self.isTrue(self.cfg["Workflow"][pluginType]["Edit"])
+        if pluginType == "Demo":
+            return False
+        return Text.isTrue(self.cfg["Workflow"][pluginType]["Edit"])
 
     def isWorkflowDebugTrue(self, pluginType):
-        return self.isTrue(self.cfg["Workflow"][pluginType]["Debug"])
+        if pluginType == "Demo":
+            return False
+        return Text.isTrue(self.cfg["Workflow"][pluginType]["Debug"])
 
     def load(self, cfgPath="cfg.json"):
         if not os.path.isfile(cfgPath):
@@ -124,66 +161,32 @@ class Cfg(object):
             if Text.isNothing(value):
                 Error.raiseException(
                 "Missing '{0}' value in {1}".format(name, self.cfgPath))
-        for pluginType in self.pluginTypes:
-            self.__verifyCfgPlugins(
-                pluginType,
-                self.getPluginsByType(pluginType),
-                Framework.getPluginFiles(pluginType)
-        )
-
-    def __verifyCfgPlugins(self, pluginType, plugins, pluginFiles):
-        if plugins is None or len(plugins["Plugin"]) < 1:
-            Error.raiseException(
-                "No {0} plugins found: {1}".format(pluginType, self.cfgPath))
-
-        if pluginFiles is None or len(pluginFiles) < 1:
-            Error.raiseException(
-                "No plugins found under: {0}/Plugin/?".format(
-                self.installDir))
-
-        methods = {}
-        for plugin in plugins["Plugin"]:
-            methods = self.getPluginMethods(plugin["Type"], plugin["Name"])
-            for method in methods["Method"]:
+        pluginLookupMap = []
+        for plugin in self.cfg["Plugin"]:
+            pluginMethods = self.getPluginMethods(plugin["Type"], plugin["Name"])
+            for pluginMethod in pluginMethods["Method"]:
                 if not Framework.hasPluginClassMethod(
-                    plugin["Type"], plugin["Name"], method["Name"]):
+                    plugin["Type"], plugin["Name"], pluginMethod["Name"]):
                         Error.raiseException(
                         "Can't find {0}::{1}::{2}()".format(
-                            plugin["Type"], plugin["Name"], method["Name"]))
-
-        pluginFileNames = []
-        for plugin in pluginFiles:
-            pluginFileNames.append(plugin["Name"])
-
-        pluginNames = []
-        for plugin in plugins["Plugin"]:
-            if not plugin["Name"] in pluginFileNames:
-                Error.raiseException(
-                    "Plugin doesn't exist: {0}/Plugin/{1}/{2}.py".format(
-                    self.installDir, pluginType, plugin))
-            pluginNames.append(plugin["Name"])
-
-        workflowPlugins = []
-        if pluginType == "IO":
-            workflowPlugins.append(self.getWorkflowPlugin("Input"))
-            workflowPlugins.append(self.getWorkflowPlugin("Output"))
-        else:
-            workflowPlugins.append(self.getWorkflowPlugin(pluginType))
-
-        for workflowPlugin in workflowPlugins:
-            if not workflowPlugin["Plugin"] in pluginNames:
-                Error.raiseException(
-                "Workflow plugin {0} isn't defined in {1} plugin".format(
-                workflowPlugin, pluginType))
-            pluginType = workflowPlugin["Alias"]
-            pluginName = workflowPlugin["Plugin"]
-            pluginMethod = workflowPlugin["Method"]
-            methods = self.getPluginMethods(pluginType, pluginName)
-            foundFlag = False
-            for method in methods["Method"]:
-                if method["Name"] == pluginMethod:
-                    foundFlag = True
-            if not foundFlag:
-                Error.raiseException(
-                "Can't find {0}::{1}::{2}()".format(
-                    pluginType, pluginName, pluginMethod))
+                            plugin["Type"], plugin["Name"], pluginMethod["Name"]))
+                pluginLookupMap.append(
+                    "{0}{1}{2}".format(plugin["Type"], plugin["Name"], pluginMethod["Name"]))
+        if len(self.cfg["Workflow"]["Demo"]["Plugin"]) != len(self.cfg["Workflow"]["Demo"]["Method"]):
+            Error.raiseException("Mismatched number of demo plugins and methods")
+        workflowPluginLookupMap = []
+        for workflowPluginType, workflowPluginCfg in self.cfg["Workflow"].items():
+            pluginType = self.pluginTypeAlias[workflowPluginType]
+            if pluginType != "Demo":
+                workflowPluginLookupMap.append(
+                    "{0}{1}{2}".format(pluginType, workflowPluginCfg["Plugin"],
+                                       workflowPluginCfg["Method"]))
+            else:
+                for i in range(0, len(workflowPluginCfg["Plugin"])):
+                    key = "{0}{1}{2}".format(pluginType, workflowPluginCfg["Plugin"][i],
+                                             workflowPluginCfg["Method"][i])
+                    if key not in pluginLookupMap:
+                        Error.raiseException(
+                        "Can't find workflow plugin {0}::{1}::{2}()".format(
+                            workflowPluginType, workflowPluginCfg["Plugin"][i],
+                            workflowPluginCfg["Method"][i]))

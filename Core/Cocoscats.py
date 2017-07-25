@@ -1,10 +1,7 @@
-import copy
 import datetime
-import hashlib
 import importlib
 import os
 import sys
-import traceback
 from Core.Cfg import Cfg
 from Core.Database import Database
 from Core.Directory import Directory
@@ -24,21 +21,22 @@ class Cocoscats(Cfg):
             "analyzerPath": None,
             "translatorPath": None,
             "outputPath": None,
+            "sourcePath": None,
+            "targetPath": None,
             "dateTime": None
         }
 
-    def __callPluginMethod(self, pluginType, workflowPluginParams, frameworkParams):
-        pluginName = workflowPluginParams["Plugin"]
-        pluginMethod = workflowPluginParams["Method"]
+    def __callPluginMethod(self, pluginType, workflowPluginParams, frameworkParams, pluginName=None, pluginMethod=None):
+        if pluginName is None:
+            pluginName = workflowPluginParams["Plugin"]
+        if pluginMethod is None:
+            pluginMethod = workflowPluginParams["Method"]
         pluginCfg = self.getPlugin(pluginType, pluginName)
         pluginParams = self.getPluginMethod(pluginType, pluginName, pluginMethod)["Params"]
         pluginModule= getattr(importlib.import_module(
             "Plugin.{0}.{1}".format(pluginType, pluginName)), pluginName)
         pluginInstance = pluginModule(pluginCfg, pluginParams, workflowPluginParams, frameworkParams)
         return self.__getPluginMethodInstance(pluginInstance, pluginMethod)()
-
-    def getCfg(self):
-        return copy.deepcopy(self.cfg)
 
     def __getPluginMethodInstance(self, pluginInstance, pluginMethod):
         method = None
@@ -78,15 +76,30 @@ class Cocoscats(Cfg):
             File.delete(self.frameworkParams[contentType])
 
     def runAnalyzer(self):
-        Msg.show("Execute: Analyzer Phase")
         content = self.__callPluginMethod("Analyzer", self.getWorkflowPlugin("Analyzer"), self.frameworkParams)
         return File.getContent(self.frameworkParams["analyzerPath"])
 
-    def runDatabase(self):
+    def runDemo(self, pluginName, pluginMethod):
+        responseCode = self.__callPluginMethod("Demo", self.getWorkflowPlugin("Demo"), self.frameworkParams, pluginName, pluginMethod)
+        return 1
+
+    def runInput(self):
+        content = self.__callPluginMethod("IO", self.getWorkflowPlugin("Input"), self.frameworkParams)
+        File.setContent(self.frameworkParams["originalPath"], content)
+        return content
+
+    def runOutput(self):
+        content = self.__callPluginMethod("IO", self.getWorkflowPlugin("Output"), self.frameworkParams)
+        return content
+
+    def runTranslator(self):
+        content = self.__callPluginMethod("Translator", self.getWorkflowPlugin("Translator"), self.frameworkParams)
+        return content
+
+    def updateDatabase(self):
         if not Text.isTrue(self.cfg["Database"]["Enable"]):
             Msg.showWarning("Database is NOT enabled in {0}".format(self.cfgPath))
             return
-        Msg.show("Execute: Database Update")
         Database.connect()
         Database.setDebug(Text.toTrueOrFalse(self.cfg["Database"]["Debug"]))
         with Database.ORM.db_session:
@@ -132,19 +145,3 @@ class Cocoscats(Cfg):
                 Plugin=self.cfg["Workflow"]["Output"])
 
         Database.disconnect()
-
-    def runInput(self):
-        Msg.show("Execute: Input Phase")
-        content = self.__callPluginMethod("IO", self.getWorkflowPlugin("Input"), self.frameworkParams)
-        File.setContent(self.frameworkParams["originalPath"], content)
-        return content
-
-    def runOutput(self):
-        Msg.show("Execute: Output Phase")
-        content = self.__callPluginMethod("IO", self.getWorkflowPlugin("Output"), self.frameworkParams)
-        return content
-
-    def runTranslator(self):
-        Msg.show("Execute: Translation Phase")
-        content = self.__callPluginMethod("Translator", self.getWorkflowPlugin("Translator"), self.frameworkParams)
-        return content

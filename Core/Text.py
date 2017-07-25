@@ -10,6 +10,14 @@ class Text():
         return something.strip()
 
     @staticmethod
+    def isInt(something):
+        try:
+            int(something)
+            return True
+        except ValueError:
+            return False
+
+    @staticmethod
     def isNothing(something):
         return something is None or str(something).strip() == ""
 

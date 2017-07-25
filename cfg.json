@@ -1,6 +1,7 @@
 {
     "ProjectID": "WebDude",
     "Description": "John's Goodness goes here",
+    "Tag": [],
     "Workflow":
     {
         "Input":
@@ -27,11 +28,17 @@
         },
         "Output":
         {
-            "Plugin": "HtmlFile",
+            "Plugin": "TextFile",
             "Method": "runOutput",
-            "Target": "./Demo/Simple/houseTranslated.html",
+            "Target": "./Demo/Simple/houseTranslated.txt",
             "Edit": "False",
             "Debug": "False"
+        },
+        "Demo":
+        {
+            "Plugin": ["Browser", "TextEditor"],
+            "Method": ["run", "run"],
+            "Enable": "True"
         }
     },
     "Plugin":
@@ -41,7 +48,7 @@
         "Type": "IO",
         "Version": "1.0.0",
         "Author" : "Cocoscats",
-        "Description": "An IO plugin to handle simple HTML files",
+        "Description": "An IO plugin to handle simple HTML files.",
         "Link": [],
         "Method":
         [
@@ -56,7 +63,7 @@
         "Type": "IO",
         "Version": "1.0.0",
         "Author" : "Cocoscats",
-        "Description": "An IO plugin to handle simple JSON files",
+        "Description": "An IO plugin to handle simple JSON files.",
         "Link": [],
         "Method":
         [
@@ -74,7 +81,7 @@
         "Type": "IO",
         "Version": "1.0.0",
         "Author" : "Cocoscats",
-        "Description": "An IO plugin that interacts with Quizlet web services",
+        "Description": "An IO plugin that interacts with Quizlet web services.",
         "Link": ["https://quizlet.com"],
         "Method":
         [
@@ -91,7 +98,7 @@
         "Type": "IO",
         "Version": "1.0.0",
         "Author" : "Cocoscats",
-        "Description": "An IO plugin to handle simple text files",
+        "Description": "An IO plugin to handle simple text files.",
         "Link": [],
         "Method":
         [
@@ -110,7 +117,7 @@
         "Type": "IO",
         "Version": "1.0.0",
         "Author" : "Wikipedia and Sam Brightman",
-        "Description": "An IO plugin to interact with the Wikipedia API",
+        "Description": "An IO plugin to interact with the Wikipedia API.",
         "Link": ["https://www.wikipedia.org/",
                  "https://github.com/sambrightman/wiki-api"],
         "Method":
@@ -135,7 +142,7 @@
         "Type": "IO",
         "Version": "1.0.0",
         "Author" : "Cocoscats",
-        "Description": "An IO plugin to handle simple XML files",
+        "Description": "An IO plugin to handle simple XML files.",
         "Link": [],
         "Method":
         [
@@ -150,7 +157,7 @@
         "Type": "Analyzer",
         "Version": "1.0.0",
         "Author" : "NLTK",
-        "Description": "An analyzer plugin that uses the NLTK library",
+        "Description": "An analyzer plugin that uses the NLTK library.",
         "Links": ["http://www.nltk.org/"],
         "Method":
         [
@@ -170,7 +177,7 @@
         "Type": "Translator",
         "Version": "1.0.0",
         "Author" : "Microsoft",
-        "Description": "A translation plugin that uses Microsoft's Azure Cloud Translator",
+        "Description": "A translation plugin that uses Microsoft's Azure Cloud Translator.",
         "Links": ["https://azure.microsoft.com"],
         "Method":
         [
@@ -182,6 +189,57 @@
                     "L1": "en",
                     "L2": "id",
                     "SearchOneByOne": "False"
+                }
+            }
+        ]
+        },
+        {
+        "Name": "Browser",
+        "Type": "Demo",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "A simple browser demo.",
+        "Links": [],
+        "Method":
+        [
+            {
+                "Name": "run",
+                "Params":
+                {
+                }
+            }
+        ]
+        },
+        {
+        "Name": "Flashcard",
+        "Type": "Demo",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "A simple web-based flashcard demo.",
+        "Links": [],
+        "Method":
+        [
+            {
+                "Name": "run",
+                "Params":
+                {
+                }
+            }
+        ]
+        },
+        {
+        "Name": "TextEditor",
+        "Type": "Demo",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "A simple text editor demo.",
+        "Links": [],
+        "Method":
+        [
+            {
+                "Name": "run",
+                "Params":
+                {
                 }
             }
         ]

@@ -1,3 +1,4 @@
+from Core.Database import Database
 from Core.Error import Error
 from Core.File import File
 from Core.Msg import Msg
@@ -16,6 +17,9 @@ class Interface(object):
     def getAnalyzerContent(self):
         return self.__getContent("analyzerPath")
 
+    def getAnalyzerContentFromDatabase(self):
+        NotImplemented
+
     def getCfgValue(self, name):
         return self.__cfg[name]
 
@@ -28,8 +32,14 @@ class Interface(object):
     def getInputContent(self):
         return self.__getContent("inputPath")
 
+    def getInputContentFromDatabase(self):
+        NotImplemented
+
     def getOutputContent(self):
         return self.__getContent("outputPath")
+
+    def getOutputContentFromDatabase(self):
+        NotImplemented
 
     def getPluginParamValue(self, name):
         return self.__pluginParams[name]
@@ -42,6 +52,9 @@ class Interface(object):
 
     def getTranslatorContent(self):
         return self.__getContent("translatorPath")
+
+    def getTranslatorContentFromDatabase(self):
+        NotImplemented
 
     def getTranslatorContentAsSections(self):
         content = self.getTranslatorContent()
@@ -85,14 +98,16 @@ class Interface(object):
         return sectionizedContent
 
     def getWorkflowSource(self):
-        if "Source" in self.__workflowPluginParams:
-            return self.__workflowPluginParams["Source"]
-        return None
+        return self.__workflowPluginParams["__workflowSourcePath__"]
+        #if "Source" in self.__workflowPluginParams:
+        #    return self.__workflowPluginParams["Source"]
+        #return None
 
     def getWorkflowTarget(self):
-        if "Target" in self.__workflowPluginParams:
-            return self.__workflowPluginParams["Target"]
-        return None
+        return self.__workflowPluginParams["__workflowTargetPath__"]
+        #if "Target" in self.__workflowPluginParams:
+        #    return self.__workflowPluginParams["Target"]
+        #return None
 
     def handleException(msg, showStackTraceFlag=True, abortFlag=True):
         Error.handleException(msg, showStackTraceFlag, abortFlag)
