@@ -124,7 +124,7 @@ class Web(object):
         sys.stdout.flush()
         sys.stderr.flush()
         for client in Web.cocoscats.cfg["Web"]["Browser"]:
-            if Text.isNothing(client) or client == "default":
+            if Text.isNothing(client) or client.lower() == "default":
                 if webbrowser.open(Web.url):
                     break
             else:

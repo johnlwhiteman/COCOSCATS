@@ -66,6 +66,12 @@ class Cfg(object):
             return """{"Methods:":[]}"""
         return json.loads(json.dumps({"Method": methods}))
 
+    def getProjectDescription(self):
+        return self.cfg["Description"]
+
+    def getProjectID(self):
+        return self.cfg["ProjectID"]
+
     def getWorkflow(self):
         return self.cfg["Workflow"]
 
@@ -104,6 +110,8 @@ class Cfg(object):
             plugin["Alias"] = "IO"
         plugin["__workflowSourcePath__"] = self.getWorkflowSourcePath()
         plugin["__workflowTargetPath__"] = self.getWorkflowTargetPath()
+        plugin["__projectID__"] = self.getProjectID()
+        plugin["__projectDescription__"] = self.getProjectDescription()
         return plugin
 
     def getWorkflowSourcePath(self):

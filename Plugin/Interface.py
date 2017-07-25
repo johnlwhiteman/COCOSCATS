@@ -17,8 +17,8 @@ class Interface(object):
     def getAnalyzerContent(self):
         return self.__getContent("analyzerPath")
 
-    def getAnalyzerContentFromDatabase(self):
-        NotImplemented
+    def getAnalyzerContentDB(self):
+        return Database.getAnalyzerContent(self.getProjectID())
 
     def getCfgValue(self, name):
         return self.__cfg[name]
@@ -32,14 +32,14 @@ class Interface(object):
     def getInputContent(self):
         return self.__getContent("inputPath")
 
-    def getInputContentFromDatabase(self):
-        NotImplemented
+    def getInputContentDB(self):
+        return Database.getInputContent(self.getProjectID())
 
     def getOutputContent(self):
         return self.__getContent("outputPath")
 
-    def getOutputContentFromDatabase(self):
-        NotImplemented
+    def getOutputContentDB(self):
+        return Database.getOutputContent(self.getProjectID())
 
     def getPluginParamValue(self, name):
         return self.__pluginParams[name]
@@ -50,11 +50,17 @@ class Interface(object):
     def getPluginParamValueAsTrueOrFalse(self, name):
         return Text.toTrueOrFalse(self.getPluginParamValue(name))
 
+    def getProjectDescription(self):
+        return self.__workflowPluginParams["__projectDescription__"]
+
+    def getProjectID(self):
+        return self.__workflowPluginParams["__projectID__"]
+
     def getTranslatorContent(self):
         return self.__getContent("translatorPath")
 
     def getTranslatorContentFromDatabase(self):
-        NotImplemented
+        return Database.getTranslatorContent(self.getProjectID())
 
     def getTranslatorContentAsSections(self):
         content = self.getTranslatorContent()
@@ -99,15 +105,9 @@ class Interface(object):
 
     def getWorkflowSource(self):
         return self.__workflowPluginParams["__workflowSourcePath__"]
-        #if "Source" in self.__workflowPluginParams:
-        #    return self.__workflowPluginParams["Source"]
-        #return None
 
     def getWorkflowTarget(self):
         return self.__workflowPluginParams["__workflowTargetPath__"]
-        #if "Target" in self.__workflowPluginParams:
-        #    return self.__workflowPluginParams["Target"]
-        #return None
 
     def handleException(msg, showStackTraceFlag=True, abortFlag=True):
         Error.handleException(msg, showStackTraceFlag, abortFlag)

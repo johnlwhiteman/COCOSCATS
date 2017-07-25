@@ -1,7 +1,6 @@
 {
     "ProjectID": "WebDude",
     "Description": "John's Goodness goes here",
-    "Tag": [],
     "Workflow":
     {
         "Input":
@@ -240,6 +239,8 @@
                 "Name": "run",
                 "Params":
                 {
+                    "Application": "Default",
+                    "Source": "Database"
                 }
             }
         ]
@@ -256,10 +257,10 @@
     {
         "Browser":
         [
-            "default",
+            "Default",
             "C:/Program Files (x86)/Mozilla Firefox/firefox.exe %s",
             "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s",
-            "default"
+            "Default"
         ],
         "Debug": "True",
         "Host": "127.0.0.1",

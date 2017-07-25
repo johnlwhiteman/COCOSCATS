@@ -1,6 +1,9 @@
 from Plugin.Interface import Interface
+from Core.File import File
+import os
 import platform
 import sys
+import tempfile
 
 class TextEditor(Interface):
 
@@ -11,15 +14,21 @@ class TextEditor(Interface):
         return platform.system().upper() == "WINDOWS"
 
     def run(self):
-
-        print(self.getWorkflowSource())
-        print(self.getWorkflowTarget())
-
-
-        #if self.__isWindows():
-         #   pass
-
-       # else:
-        #    pass
+        application = self.getPluginParamValue("Application").lower()
+        source = self.getPluginParamValue("Source").lower()    
+        content = None
+        fd = None
+        path = None
+        if source == "database":
+            content = self.getOutputContentDB()
+            fd = tempfile.NamedTemporaryFile(mode="w", delete=True)
+            print(content["Content"])
+        #elif source == "path" or source == "target":
+            pass
+        if self.getPluginParamValue("Application").lower() == "default":
+            if self.__isWindows():
+                pass
+            else:
+                print("THIS IS LINUX")
 
         return 1

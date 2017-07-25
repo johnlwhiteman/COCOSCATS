@@ -15,6 +15,7 @@ class Cocoscats(Cfg):
     def __init__(self):
         super(Cocoscats, self).__init__()
         self.frameworkParams = {
+            "projectID": None,
             "dataDir": None,
             "originalPath": None,
             "inputPath": None,
@@ -51,7 +52,8 @@ class Cocoscats(Cfg):
 
     def initialize(self, cfgPath):
         super(Cocoscats, self).load(cfgPath)
-        self.frameworkParams["dataDir"] = "{0}/Data/{1}".format(self.installDir, self.cfg["ProjectID"])
+        self.frameworkParams["projectID"] = self.getProjectID()
+        self.frameworkParams["dataDir"] = "{0}/Data/{1}".format(self.installDir, self.getProjectID())
         Directory.make(self.frameworkParams["dataDir"])
         self.frameworkParams["originalPath"] = "{0}/original.txt".format(self.frameworkParams["dataDir"])
         self.frameworkParams["inputPath"] = "{0}/input.txt".format(self.frameworkParams["dataDir"])
@@ -103,13 +105,13 @@ class Cocoscats(Cfg):
         Database.connect()
         Database.setDebug(Text.toTrueOrFalse(self.cfg["Database"]["Debug"]))
         with Database.ORM.db_session:
-            records = Database.Table.Project.get(ID=self.cfg["ProjectID"])
+            records = Database.Table.Project.get(ID=self.getProjectID())
             if records is not None:
                 records.delete()
                 Database.commit()
 
             projectTable = Database.Table.Project(
-                ID=self.cfg["ProjectID"],
+                ID=self.getProjectID(),
                 Description=Database.sanitize(self.cfg["Description"]),
                 DateTime=self.frameworkParams["dateTime"],
                 Workflow=self.cfg["Workflow"])

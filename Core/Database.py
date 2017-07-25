@@ -82,105 +82,94 @@ class Database():
         return os.path.isfile(Database.path)
 
     @staticmethod
-    def getProject(projectID, asJson=False):
-        with Database.ORM.db_session:
-            result = Database.Table.Project.get(ID=projectID)
-            if asJson:
-                if result is None:
-                    return json.dumps({})
-                return json.dumps({
-                    "ID": result.ID,
-                    "Description": result.Description,
-                    "DateTime": result.DateTime,
-                    "Workflow": result.Workflow
-                })
-            return result
-
-    @staticmethod
-    def getProjectAnalyzer(projectID, asJson=False):
+    def getAnalyzerContent(projectID):
         with Database.ORM.db_session:
             result = Database.Table.Analyzer.get(ProjectID=projectID)
-            if asJson:
-                if result is None:
-                    return json.dumps({})
-                return json.dumps({
-                    "ID": result.ID,
-                    "ProjectID": projectID,
-                    "Content": result.Content,
-                    "PluginName": result.PluginName,
-                    "PluginMethod": result.PluginMethod,
-                    "Plugin": result.Plugin
-                })
-            return result
+            if result is None:
+                return None
+            return {
+                "ID": result.ID,
+                "ProjectID": projectID,
+                "Content": result.Content,
+                "PluginName": result.PluginName,
+                "PluginMethod": result.PluginMethod,
+                "Plugin": result.Plugin
+            }
 
     @staticmethod
-    def getProjectInput(projectID, asJson=False):
+    def getInputContent(projectID):
         with Database.ORM.db_session:
             result = Database.Table.Input.get(ProjectID=projectID)
-            if asJson:
-                if result is None:
-                    return json.dumps({})
-                return json.dumps({
-                    "ID": result.ID,
-                    "ProjectID": projectID,
-                    "Content": result.Content,
-                    "Source": result.Source,
-                    "PluginName": result.PluginName,
-                    "PluginMethod": result.PluginMethod,
-                    "Plugin": result.Plugin
-                })
-            return result
+            if result is None:
+                return None
+            return {
+                "ID": result.ID,
+                "ProjectID": projectID,
+                "Content": result.Content,
+                "Source": result.Source,
+                "PluginName": result.PluginName,
+                "PluginMethod": result.PluginMethod,
+                "Plugin": result.Plugin
+            }
 
     @staticmethod
-    def getProjectOutput(projectID, asJson=False):
+    def getOutputContent(projectID):
         with Database.ORM.db_session:
             result = Database.Table.Output.get(ProjectID=projectID)
-            if asJson:
-                if result is None:
-                    return json.dumps({})
-                return json.dumps({
-                    "ID": result.ID,
-                    "ProjectID": projectID,
-                    "Content": result.Content,
-                    "Traget": result.Target,
-                    "PluginName": result.PluginName,
-                    "PluginMethod": result.PluginMethod,
-                    "Plugin": result.Plugin
-                })
-            return result
+            if result is None:
+                return None
+            return {
+                "ID": result.ID,
+                "ProjectID": projectID,
+                "Content": result.Content,
+                "Target": result.Target,
+                "PluginName": result.PluginName,
+                "PluginMethod": result.PluginMethod,
+                "Plugin": result.Plugin
+            }
 
     @staticmethod
-    def getProjectResults(projectID, asJson=False):
+    def getProject(projectID):
         result = {}
-        result["Project"] = Database.getProject(projectID, asJson)
-        result["Input"] = Database.getProjectInput(projectID, asJson)
-        result["Analyzer"] = Database.getProjectAnalyzer(projectID, asJson)
-        result["Translator"] = Database.getProjectTranslator(projectID, asJson)
-        result["Output"] = Database.getProjectOutput(projectID, asJson)
-        if asJson:
-            return json.dumps(result)
+        result["Project"] = Database.getProjectDetails(projectID)
+        result["Input"] = Database.getInputContent(projectID)
+        result["Analyzer"] = Database.getAnalyzerContent(projectID)
+        result["Translator"] = Database.getTranslatorContent(projectID)
+        result["Output"] = Database.getOutputContent(projectID)
         return result
 
     @staticmethod
-    def getProjectTranslator(projectID, asJson):
+    def getProjectDetails(projectID):
+        with Database.ORM.db_session:
+            result = Database.Table.Project.get(ID=projectID)
+            if result is None:
+                return None
+            return {
+                "ID": result.ID,
+                "Description": result.Description,
+                "DateTime": result.DateTime,
+                "Workflow": result.Workflow
+            }
+
+    @staticmethod
+    def getTranslatorContent(projectID):
         with Database.ORM.db_session:
             result =  Database.Table.Translator.get(ProjectID=projectID)
-            if asJson:
-                if result is None:
-                    return json.dumps({})
-                return json.dumps({
-                    "ID": result.ID,
-                    "ProjectID": projectID,
-                    "Content": result.Content,
-                    "PluginName": result.PluginName,
-                    "PluginMethod": result.PluginMethod,
-                    "Plugin": result.Plugin
-                })
-            return result
+            if result is None:
+                return None
+            return {
+                "ID": result.ID,
+                "ProjectID": projectID,
+                "Content": result.Content,
+                "PluginName": result.PluginName,
+                "PluginMethod": result.PluginMethod,
+                "Plugin": result.Plugin
+            }
 
     @staticmethod
     def sanitize(something):
-        something = something.replace("'", "\\'")
+        if something is str:
+            something = something.replace("'", "\\'")
         return something
 
     @staticmethod
