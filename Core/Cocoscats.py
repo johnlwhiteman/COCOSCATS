@@ -8,6 +8,7 @@ from Core.Directory import Directory
 from Core.Error import Error
 from Core.File import File
 from Core.Msg import Msg
+from Core.Result import Result
 from Core.Text import Text
 
 class Cocoscats(Cfg):
@@ -131,9 +132,11 @@ class Cocoscats(Cfg):
                 PluginMethod=Database.sanitize(self.cfg["Workflow"]["Analyzer"]["Method"]),
                 Plugin=self.cfg["Workflow"]["Analyzer"])
 
+            content = Database.sanitize(File.getContent(self.frameworkParams["translatorPath"]))
             translatorTable = Database.Table.Translator(
                 ProjectID=projectTable,
-                Content=Database.sanitize(File.getContent(self.frameworkParams["translatorPath"])),
+                Content=content,
+                ContentJson=Result.getTranslatorContentAsJson(content),
                 PluginName=Database.sanitize(self.cfg["Workflow"]["Translator"]["Plugin"]),
                 PluginMethod=Database.sanitize(self.cfg["Workflow"]["Translator"]["Method"]),
                 Plugin=self.cfg["Workflow"]["Translator"])

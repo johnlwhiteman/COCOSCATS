@@ -8,13 +8,10 @@ class HtmlFile(Interface):
         super(HtmlFile, self).__init__(cfg, pluginParams, workflowPluginParams, frameworkParams)
 
     def runOutput(self):
-        inputContent = self.getInputContent()
-        translatorContent = self.getTranslatorContent()
-        tc = self.getTranslatorContentAsSections()
-        tc["L1L2"] = inputContent
-        for token in tc["VOCABULARY"].split("\n"):
-            l1, l2, pos, freq = token.split(",")
-            tc["L1L2"] = re.sub(r"\b{0}\b".format(l1), '<span class="l2">{0}</span>'.format(l2), tc["L1L2"], re.IGNORECASE)
+        tc = self.getTranslatorContentAsJson()
+        tc["l1l2"] = re.sub("{","<span class=\"l2\">", tc["l1l2"])
+        tc["l1l2"] = re.sub("}","</span>", tc["l1l2"])
+
         content = """<html lang="en">
 <head>
     <meta charset="utf-8">
@@ -55,6 +52,6 @@ class HtmlFile(Interface):
 
 </body>
 </html>
-""".format(tc["L1L2"].strip(), tc["L1"], tc["L2"], tc["VOCABULARY"])
+""".format(tc["l1l2"].strip(), tc["l1"], tc["l2"], "\n".join(tc["wordlist"]))
         self.setOutputContent(content)
         return content

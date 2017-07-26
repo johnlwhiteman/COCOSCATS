@@ -1,7 +1,12 @@
 import ast
+import base64
 import re
 
 class Text():
+
+    @staticmethod
+    def encodeBase64(something):
+        return str(base64.b64encode(bytes(something, "utf-8")))
 
     @staticmethod
     def getTextOnly(something):

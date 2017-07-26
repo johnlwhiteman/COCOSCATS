@@ -2,6 +2,7 @@ from Core.Database import Database
 from Core.Error import Error
 from Core.File import File
 from Core.Msg import Msg
+from Core.Result import Result
 from Core.Text import Text
 import re
 import sys
@@ -59,49 +60,11 @@ class Interface(object):
     def getTranslatorContent(self):
         return self.__getContent("translatorPath")
 
+    def getTranslatorContentAsJson(self):
+        return Result.getTranslatorContentAsJson(self.getTranslatorContent())
+
     def getTranslatorContentFromDatabase(self):
         return Database.getTranslatorContent(self.getProjectID())
-
-    def getTranslatorContentAsSections(self):
-        content = self.getTranslatorContent()
-        sectionizedContent = {"VOCABULARY": [], "REJECTED": [], "L1": [], "L2": []}
-        for token in content.split("\n"):
-            token = token.strip()
-            if len(token) < 1 or re.match("#", token):
-                continue
-            if re.search("(VOCABULARY|REJECT|L1|L2)", token):
-                if token == "[VOCABULARY]":
-                    vocabularyFlag = True
-                    rejectedFlag = False
-                    l1Flag = False
-                    l2Flag = False
-                elif token == "[REJECTED]":
-                    vocabularyFlag = False
-                    rejectedFlag = True
-                    l1Flag = False
-                    l2Flag = False
-                elif token == "[L1]":
-                    vocabularyFlag = False
-                    rejectedFlag = False
-                    l1Flag = True
-                    l2Flag = False
-                elif token == "[L2]":
-                    vocabularyFlag = False
-                    rejectedFlag = False
-                    l1Flag = False
-                    l2Flag = True
-                continue
-            if vocabularyFlag:
-                sectionizedContent["VOCABULARY"].append(token)
-            elif rejectedFlag:
-                sectionizedContent["REJECTED"].append(token)
-            elif l1Flag:
-                sectionizedContent["L1"].append(token)
-            elif l2Flag:
-                sectionizedContent["L2"].append(token)
-        for key in sectionizedContent.keys():
-            sectionizedContent[key] = "\n".join(sectionizedContent[key])
-        return sectionizedContent
 
     def getWorkflowSource(self):
         return self.__workflowPluginParams["__workflowSourcePath__"]

@@ -292,14 +292,14 @@ class WebApp(object):
         if not action is None and action == "Save":
             File.setContent(path, bottle.request.forms.Content)
             WebApp.outputTainted = True
-            Web.cocoscats.runDatabase()
+            Web.cocoscats.updateDatabase()
             return "Successfully saved to '" + path + "'"
         content = None
         if WebApp.outputTainted:
             content = File.getContent(path)
         else:
             content = Web.cocoscats.runOutput()
-            Web.cocoscats.runDatabase()
+            Web.cocoscats.updateDatabase()
         editor = WebApp.getEditor(content)
         body = """{0}{1}""".format(navigation, editor)
         return "{0}{1}{2}".format(header, body, footer)

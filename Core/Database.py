@@ -1,12 +1,14 @@
 import json
 import os
 from pony import orm
+import re
 import sqlite3
 import sys
 from Core.Directory import Directory
 from Core.File import File
 from Core.Framework import Framework
 from Core.Msg import Msg
+from Core.Text import Text
 
 # Reference: https://www.blog.pythonlibrary.org/2014/07/21/python-101-an-intro-to-pony-orm/
 
@@ -161,6 +163,7 @@ class Database():
                 "ID": result.ID,
                 "ProjectID": projectID,
                 "Content": result.Content,
+                "ContentJson": result.ContentJson,
                 "PluginName": result.PluginName,
                 "PluginMethod": result.PluginMethod,
                 "Plugin": result.Plugin
@@ -213,6 +216,7 @@ class Translator(Database.ODB.Entity):
     ID = orm.PrimaryKey(int, auto=True)
     ProjectID = orm.Required(Project)
     Content = orm.Required(orm.LongStr)
+    ContentJson = orm.Required(orm.Json)
     PluginName = orm.Optional(str)
     PluginMethod = orm.Optional(str)
     Plugin = orm.Optional(orm.Json)

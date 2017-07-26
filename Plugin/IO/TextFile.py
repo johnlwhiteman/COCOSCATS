@@ -23,13 +23,7 @@ class TextFile(Interface):
         return content
 
     def runOutput(self):
-        inputContent = self.getInputContent()
-        translatorContent = self.getTranslatorContent()
-        tc = self.getTranslatorContentAsSections()
-        tc["L1L2"] = inputContent
-        for token in tc["VOCABULARY"].split("\n"):
-            l1, l2, pos, freq = token.split(",")
-            tc["L1L2"] = re.sub(r"\b{0}\b".format(l1), "[{0}]".format(l2), tc["L1L2"], re.IGNORECASE)
+        tc = self.getTranslatorContentAsJson()
         content = """
 [L1L2]
 {0}
@@ -42,7 +36,7 @@ class TextFile(Interface):
 
 [VOCABULARY]
 {3}
-""".format(tc["L1L2"].strip(), tc["L1"], tc["L2"], tc["VOCABULARY"])
+""".format(tc["l1l2"], tc["l1"], tc["l2"], "\n".join(tc["wordlist"]))
         content = content.strip()
         self.setOutputContent(content)
         return content

@@ -14,7 +14,7 @@ class Cli():
         Cli.__runTranslator()
         Cli.__runOutput()
         Cli.cocoscats.updateDatabase()
-        Cli.__runDemo()
+        #Cli.__runDemo()
 
     def __runAnalyzer():
         Msg.show("Execute: Analyzer Stage")

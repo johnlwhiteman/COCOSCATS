@@ -1,6 +1,7 @@
 import json
 import os
 from shutil import copyfile
+import tempfile
 from Core.Directory import Directory
 from Core.Error import Error
 
@@ -109,3 +110,10 @@ class File():
                     fd.write(content)
         except IOError as e:
             Error.handleException(e, True, True)
+
+    @staticmethod
+    def setContentToTempFile(content, suffix=""):
+        fd = tempfile.NamedTemporaryFile(mode="w", suffix=suffix, delete=False)
+        fd.write(content)
+        fd.close()
+        return File.getCanonicalPath(fd.name)

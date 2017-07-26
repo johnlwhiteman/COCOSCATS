@@ -27,16 +27,16 @@
         },
         "Output":
         {
-            "Plugin": "TextFile",
+            "Plugin": "JsonFile",
             "Method": "runOutput",
-            "Target": "./Demo/Simple/houseTranslated.txt",
+            "Target": "./Demo/Simple/houseTranslated.json",
             "Edit": "False",
             "Debug": "False"
         },
         "Demo":
         {
-            "Plugin": ["Browser", "TextEditor"],
-            "Method": ["run", "run"],
+            "Plugin": ["Browser"],
+            "Method": ["run"],
             "Enable": "True"
         }
     },
@@ -205,6 +205,8 @@
                 "Name": "run",
                 "Params":
                 {
+                    "Application": "Default",
+                    "Source": "Target"
                 }
             }
         ]
@@ -240,7 +242,7 @@
                 "Params":
                 {
                     "Application": "Default",
-                    "Source": "Database"
+                    "Source": "Target"
                 }
             }
         ]
@@ -257,7 +259,6 @@
     {
         "Browser":
         [
-            "Default",
             "C:/Program Files (x86)/Mozilla Firefox/firefox.exe %s",
             "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s",
             "Default"
