@@ -10,8 +10,9 @@ PATHS = ["./COCOSCATS.egg-info", "./build",
          "./Plugin/__pycache__", "./Plugin/Analyzer/__pycache__",
          "./Plugin/Demo/__pycache__", "./Plugin/IO/__pycache__",
          "./Plugin/Translator/__pycache__",
-         "./Demo/Simple/houseTranslated.txt",
-         "./Demo/Simple/houseTranslated.html"]
+         "./Demo/Simple/houseTranslated.html",
+         "./Demo/Simple/houseTranslated.json",
+         "./Demo/Simple/houseTranslated.txt"]
 
 def deletePaths(paths):
     for path in paths:

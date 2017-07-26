@@ -137,27 +137,29 @@ class Cfg(object):
             return False
         return Text.isTrue(self.cfg["Workflow"][pluginType]["Debug"])
 
-    def load(self, cfgPath="cfg.json"):
+    def load(self, cfgPath="cfg.json", verifyFlag=True):
         if not os.path.isfile(cfgPath):
             Error.raiseException("Can't find cfg file: {0}".format(cfgPath))
         with open(cfgPath) as fd:
             self.cfg = json.loads(fd.read())
             for name, value in self.cfg.items():
                 self.__dict__[name] = value
-        self.verifyCfg()
+        if verifyFlag:
+            self.verify()
         self.cfgPath = cfgPath
 
-    def saveCfg(self, path):
+    def save(self, path):
         with open(path, "w") as fd:
             json.dump(self.cfg, fd)
 
-    def showCfg(self):
+    def show(self):
         if self.cfg is None or self.cfgPath is None:
             Msg.showWarning("No information found for cfg file. Did you load it?")
             return
         pprint(self.cfg)
+        Msg.flush()
 
-    def verifyCfg(self):
+    def verify(self):
         for name, value in self.cfg.items():
             if name == "ProjectID":
                 if len(value) > 256 or Text.isNothing(value):
