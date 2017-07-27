@@ -32,10 +32,14 @@ class Text():
 
     @staticmethod
     def isTrue(something):
+        if isinstance(something, bool):
+            return something
         if Text.isNothing(something):
             return False
         return Text.toTrueOrFalse(something) == True
 
     @staticmethod
     def toTrueOrFalse(something):
+        if isinstance(something, bool):
+            return something
         return ast.literal_eval(something)

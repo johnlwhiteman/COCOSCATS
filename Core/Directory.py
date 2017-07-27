@@ -6,7 +6,8 @@ class Directory():
 
     @staticmethod
     def delete(path):
-        shutil.rmtree(path)
+        if Directory.exists(path):
+            shutil.rmtree(path)
 
     @staticmethod
     def deletes(paths):

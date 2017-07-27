@@ -14,8 +14,8 @@ from Core.Text import Text
 
 class Cfg(object):
 
-    def __init__(self):
-        self.cfgPath = None
+    def __init__(self, cfgPath):
+        self.cfgPath = cfgPath
         self.cfg = None
         self.installDir = Framework.getInstallDir()
         self.pluginTypes = ["IO", "Analyzer", "Translator", "Demo"]
@@ -25,6 +25,12 @@ class Cfg(object):
     def checkIfCfgLoaded(self):
         if self.cfg is None:
             Error.raiseException("Missing cfg file. Did you load it?")
+
+    def disableDemo(self):
+        self.cfg["Workflow"]["Demo"]["Enable"] = "False"
+
+    def enableDemo(self):
+        self.cfg["Workflow"]["Demo"]["Enable"] = "True"
 
     def getCfg(self):
         return copy.deepcopy(self.cfg)
@@ -137,16 +143,17 @@ class Cfg(object):
             return False
         return Text.isTrue(self.cfg["Workflow"][pluginType]["Debug"])
 
-    def load(self, cfgPath="cfg.json", verifyFlag=True):
-        if not os.path.isfile(cfgPath):
-            Error.raiseException("Can't find cfg file: {0}".format(cfgPath))
-        with open(cfgPath) as fd:
+    def load(self, verifyFlag=True):
+        __cfgPath = self.cfgPath
+        if not os.path.isfile(__cfgPath):
+            Error.raiseException("Can't find cfg file: {0}".format(__cfgPath))
+        with open(__cfgPath) as fd:
             self.cfg = json.loads(fd.read())
             for name, value in self.cfg.items():
                 self.__dict__[name] = value
         if verifyFlag:
             self.verify()
-        self.cfgPath = cfgPath
+        self.cfgPath = __cfgPath
 
     def save(self, path):
         with open(path, "w") as fd:
@@ -200,3 +207,56 @@ class Cfg(object):
                         "Can't find workflow plugin {0}::{1}::{2}()".format(
                             workflowPluginType, workflowPluginCfg["Plugin"][i],
                             workflowPluginCfg["Method"][i]))
+
+class CfgEditor(object):
+
+    def __init__(self):
+        self.cfg = None
+        self.cfgPath = None
+
+    def deleteCfg(self):
+        if Text.isNone(self.cfgPath):
+            return
+        File.delete(self.cfgPath)
+
+    def getCfg(self):
+        return copy.deepcopy(self.cfg)
+
+    def loadCfg(self, cfgPath):
+        self.cfgPath = cfgPath
+        with open(cfgPath) as fd:
+            self.cfg = json.load(fd)
+
+    def saveCfg(self, cfgPath=None):
+        if cfgPath is not None:
+            self.cfgPath = cfgPath
+        if cfgPath is None and self.cfgPath is None:
+            Error.raiseException("You must specify a path to save cfg file")
+        if self.cfg is None:
+            Error.raiseException("No cfg loaded or set")
+        with open(self.cfgPath, "w") as fd:
+            json.dump(self.cfg, fd)
+
+    def setCfg(self, cfg):
+        self.cfg = cfg
+        self.cfgPath = None
+
+    def setDatabase(self, cfg):
+        for name, value in cfg.items():
+            self.cfg["Database"][name] = value
+
+    def setDatabaseName(self, name):
+        self.cfg["Database"]["Name"] = name
+
+    def setProjectID(self, projectID):
+        self.cfg["ProjectID"] = projectID
+
+    def setWorkflowInputSource(self, path):
+        self.cfg["Workflow"]["Input"]["Source"] = path
+
+    def setWorkflowOutputTarget(self, path):
+        self.cfg["Workflow"]["Output"]["Target"] = path
+
+    def setWorkflowPlugin(self, pluginType, cfg):
+        for name, value in cfg.items():
+            self.cfg["Workflow"][pluginType][name] = value

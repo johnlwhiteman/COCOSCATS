@@ -32,6 +32,10 @@ class Framework():
         return "{0}/Plugin".format(Framework.getInstallDir())
 
     @staticmethod
+    def getTestDir():
+        return "{0}/Test".format(Framework.getInstallDir())
+
+    @staticmethod
     def getWebDir():
         return "{0}/Web".format(Framework.getInstallDir())
 

@@ -28,8 +28,8 @@ if __name__ == "__main__":
     if not os.path.isfile(cfgPath):
         Error.handleError("Can't find JSON configuration file: {0}".format(cfgPath), True)
     try:
-        cocoscats = Cocoscats()
-        cocoscats.initialize(cfgPath)
+        cocoscats = Cocoscats(cfgPath)
+        cocoscats.initialize()
         if args.cli:
             Cli.run(cocoscats)
         elif args.web:

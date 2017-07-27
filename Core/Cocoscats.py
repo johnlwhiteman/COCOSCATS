@@ -13,8 +13,8 @@ from Core.Text import Text
 
 class Cocoscats(Cfg):
 
-    def __init__(self):
-        super(Cocoscats, self).__init__()
+    def __init__(self, cfgPath):
+        super(Cocoscats, self).__init__(cfgPath)
         self.frameworkParams = {
             "projectID": None,
             "dataDir": None,
@@ -51,8 +51,19 @@ class Cocoscats(Cfg):
                     pluginMethod, str(e)), True, True)
         return method
 
-    def initialize(self, cfgPath):
-        super(Cocoscats, self).load(cfgPath)
+    def initialize(self, verifyFlag=True):
+        super(Cocoscats, self).load(verifyFlag)
+        self.__initializeFramework()
+        self.__initializeDatabase()
+
+    def __initializeDatabase(self):
+        Database.setName(self.cfg["Database"]["Name"])
+        if Text.isTrue(self.cfg["Database"]["Rebuild"]):
+            Database.drop()
+        if not Database.exists():
+            Database.create(True)
+
+    def __initializeFramework(self):
         self.frameworkParams["projectID"] = self.getProjectID()
         self.frameworkParams["dataDir"] = "{0}/Data/{1}".format(self.installDir, self.getProjectID())
         Directory.make(self.frameworkParams["dataDir"])
@@ -62,14 +73,6 @@ class Cocoscats(Cfg):
         self.frameworkParams["translatorPath"] = "{0}/translator.txt".format(self.frameworkParams["dataDir"])
         self.frameworkParams["outputPath"] = "{0}/output.txt".format(self.frameworkParams["dataDir"])
         self.frameworkParams["dateTime"] = datetime.datetime.now().isoformat()
-        self.__initializeDatabase()
-
-    def __initializeDatabase(self):
-        Database.setPath(self.cfg["Database"]["Path"])
-        if Text.isTrue(self.cfg["Database"]["Rebuild"]):
-            Database.drop()
-        if not Database.exists():
-            Database.create(True)
 
     def purgeContent(self):
         self.purgeContentByTypes(["originalPath", "inputPath", "analyzerPath", "translatorPath", "outputPath"])

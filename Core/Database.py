@@ -11,11 +11,10 @@ from Core.Msg import Msg
 from Core.Text import Text
 
 # Reference: https://www.blog.pythonlibrary.org/2014/07/21/python-101-an-intro-to-pony-orm/
-
 class Database():
     directory = Framework.getDatabaseDir()
     name = "Cocoscats"
-    path = "{0}/{1}.db".format(directory, name)
+    path = "{0}/{1}.db".format(Framework.getDatabaseDir(), name)
     debugFlag = False
     ORM = orm
     ODB = orm.Database()
@@ -180,10 +179,9 @@ class Database():
         orm.sql_debug(debugFlag)
 
     @staticmethod
-    def setPath(path):
-        Database.path = File.getAbsPath(path)
-        Database.name = File.getName(Database.path)
-        Database.directory = File.getDirectory(Database.path)
+    def setName(name):
+        Database.name = name
+        Database.path = "{0}/{1}.db".format(Framework.getDatabaseDir(), name)
 
 class Project(Database.ODB.Entity):
     ID = orm.PrimaryKey(str)

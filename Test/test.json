@@ -3,7 +3,7 @@
     "Description": "FFFJohn's Goodness goes here",
     "Database":
     {
-        "Name": "Cocoscats",
+        "Name": "CocoscatsTest",
         "Enable": "True",
         "Debug": "False",
         "Rebuild": "False"
@@ -31,7 +31,7 @@
         {
             "Plugin": "TextFile",
             "Method": "runInput",
-            "Source": "./Test/house.txt",
+            "Source": "./house.txt",
             "Edit": "False",
             "Debug": "False"
         },
@@ -51,9 +51,9 @@
         },
         "Output":
         {
-            "Plugin": "HtmlFile",
+            "Plugin": "JsonFile",
             "Method": "runOutput",
-            "Target": "./Test/tmp/houseResults.html",
+            "Target": "./tmp/houseResults.json",
             "Edit": "False",
             "Debug": "False"
         },
@@ -61,7 +61,7 @@
         {
             "Plugin": ["Browser"],
             "Method": ["run"],
-            "Enable": "True"
+            "Enable": "False"
         }
     },
     "Plugin":
@@ -208,7 +208,7 @@
                 "Name": "runTranslate",
                 "Params":
                 {
-                    "Credentials": "./Security/AzureCredentials.json",
+                    "Credentials": "../Security/AzureCredentials.json",
                     "L1": "en",
                     "L2": "id",
                     "SearchOneByOne": "False"

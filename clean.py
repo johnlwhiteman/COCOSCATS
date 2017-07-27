@@ -1,38 +1,40 @@
 import argparse
+import glob
 import os
 from Core.Cfg import Cfg
 from Core.Directory import Directory
 from Core.Error import Error
 from Core.File import File
 
-PATHS = ["./COCOSCATS.egg-info", "./build",
-         "./Core/__pycache__",  "./dist",
-         "./Plugin/__pycache__", "./Plugin/Analyzer/__pycache__",
-         "./Plugin/Demo/__pycache__", "./Plugin/IO/__pycache__",
-         "./Plugin/Translator/__pycache__",
-         "./Demo/Simple/houseTranslated.html",
-         "./Demo/Simple/houseTranslated.json",
-         "./Demo/Simple/houseTranslated.txt"]
-
-def deletePaths(paths):
-    for path in paths:
-        if os.path.isfile(path):
-            File.delete(path)
-        elif os.path.isdir(path):
-            Directory.delete(path)
-
-def deleteProtectedPaths(cfgPath):
+def deleteSafe():
     try:
-        cfg = Cfg()
-        cfg.load(cfgPath)
-        paths = [
-            cfg.cfg["Database"]["Path"],
+        for path in [
+            "./",
+            "./Core",
+            "./Plugin",
+            "./Plugin/Analyzer",
+            "./Plugin/Demo",
+            "./Plugin/IO",
+            "./Plugin/Test",
+            "./Plugin/Translator"]:
+            Directory.delete("{0}/__pycache__".format(path))
+            for path in glob.glob("./Test/Tmp/*"):
+                File.delete(File.getCanonicalPath(path))
+    except Exception as e:
+        Error.handleException(e, True)
+
+def deleteProtected(cfgPath):
+    try:
+        cfg = Cfg(cfgPath)
+        cfg.load()
+        for path in [
+            "./Database/{0}.db".format(cfg.cfg["Database"]["Name"]),
+            "./Database/CocoscatsTest.db",
             "./Security/Certificate.pem",
             "./Security/Password.json",
             "./Security/PrivateKey.pem",
-            "./Security/PublicKey.pem"
-        ]
-        deletePaths(paths)
+            "./Security/PublicKey.pem"]:
+            File.delete(path)
     except Exception as e:
         Error.handleException(e, True)
 
@@ -54,5 +56,5 @@ if __name__ == "__main__":
     if not os.path.isfile(cfgPath):
         Error.handleError("Can't find JSON configuration file: {0}".format(cfgPath), True)
     if args.force:
-        deleteProtectedPaths(cfgPath)
-    deletePaths(PATHS)
+        deleteProtected(cfgPath)
+    deleteSafe()
