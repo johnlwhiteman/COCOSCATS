@@ -4,6 +4,7 @@ from Plugin.Interface import Interface
 import json
 import re
 import requests
+import sys
 
 #https://quizlet.com/api/2.0/docs/sets
 class Quizlet(Interface):
@@ -26,9 +27,10 @@ class Quizlet(Interface):
                 return s
         return None
 
-    def __getSetsByTitle(self, title):
+    def __getSetsByTitle(self, title, sets=None):
         matches = []
-        sets = self.__getSets()
+        if sets is None:
+            sets = self.__getSets()
         if sets is None:
             return None
         for s in sets:
@@ -46,25 +48,43 @@ class Quizlet(Interface):
 
     def __createSet(self):
         url = "{0}/sets".format(self.getPluginParamValue("URL"))
-        l1 = ["one", "two", "three"]
-        l2 = ["satu", "dua", "tiga"]
+        L1 = []
+        L2 = []
+        for word in self.getTranslatorContentAsJson()["Vocabulary"]:
+            L1.append(word["L1"])
+            L2.append(word["L2"])
         content = {
             "title": self.getPluginParamValue("Title"),
-            "terms": l1,
-            "definitions": l2,
+            "terms": L1,
+            "definitions": L2,
             "lang_terms": self.getPluginParamValue("L1"),
             "lang_definitions": self.getPluginParamValue("L2")
         }
         response = requests.post(url, headers=self.__getHeaders(), json=content)
         self.__checkResponse(response, "Something went wrong while creating a set")
+        id = ""
+        quizletURL = ""
+        sets = self.__getSetsByTitle(self.getPluginParamValue("Title"))
+        if sets is not None and len(sets) == 1:
+            id = sets[0]["id"]
+            quizletURL = "https://quizlet.com{0}".format(sets[0]["url"])
+        return {
+            "id": id,
+            "url": quizletURL,
+            "content": content,
+            "header": self.__getHeaders(),
+            "response": response.text,
+            "account": self.__queryMe()
+        }
 
     def __deleteSet(self, ID):
         url = "{0}/sets/{1}".format(self.getPluginParamValue("URL"), ID)
-        print(url)
         response = requests.delete(url, headers=self.__getHeaders())
         self.__checkResponse(response, "Something went wrong while deleting a set")
 
     def __deleteSets(self, sets):
+        if sets is None:
+            return
         for s in sets:
            self. __deleteSet(s["id"])
 
@@ -84,10 +104,9 @@ class Quizlet(Interface):
         return json.loads(response.text)
 
     def runOutput(self):
-        content = json.dumps(self.__queryMe())
-        self.setOutputContent(content)
         self.__deleteSets(self.__getSetsByTitle(self.getPluginParamValue("Title")))
-        self.__createSet()
+        content = json.dumps(self.__createSet())
+        self.setOutputContent(content)
         return content
 
     def __setExists(self, title="Counting to 10 in English/Indonesian"):

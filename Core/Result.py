@@ -15,14 +15,14 @@ class Result():
         for token in wordlist:
             l1, l2, pos, cnt = token.split(",")
             L1L2 = re.sub(r"\b{0}\b".format(l1), "{{{0}}}".format(l2), L1L2, re.IGNORECASE)
-            vocabulary.append({"l1": l1, "l2": l2, "pos": pos, "cnt": cnt})
+            vocabulary.append({"L1": l1, "L2": l2, "Pos": pos, "Cnt": cnt})
         rejected = list(filter(None, tokens[idx[1]+1:idx[2]]))
         return {
-            "vocabulary": vocabulary,
-            "wordlist": wordlist,
-            "rejected": rejected,
-            "l1": L1,
-            "l2": L2,
-            "l1l2": L1L2
+            "Vocabulary": vocabulary,
+            "Wordlist": wordlist,
+            "Rejected": rejected,
+            "L1": L1,
+            "L2": L2,
+            "L1L2": L1L2
         }
 
