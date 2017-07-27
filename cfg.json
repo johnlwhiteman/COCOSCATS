@@ -1,6 +1,6 @@
 {
-    "ProjectID": "SlappyFour",
-    "Description": "FFFJohn's Goodness goes here",
+    "ProjectID": "MyProject123",
+    "Description": "Some descriptions goes here!",
     "Database":
     {
         "Name": "Cocoscats",
@@ -51,9 +51,9 @@
         },
         "Output":
         {
-            "Plugin": "HtmlFile",
+            "Plugin": "Quizlet",
             "Method": "runOutput",
-            "Target": "./Test/tmp/houseResults.html",
+            "Target": "./Test/tmp/quizletResults.txt",
             "Edit": "False",
             "Debug": "False"
         },
@@ -61,7 +61,7 @@
         {
             "Plugin": ["Browser"],
             "Method": ["run"],
-            "Enable": "True"
+            "Enable": "False"
         }
     },
     "Plugin":
@@ -112,6 +112,11 @@
                 "Name": "runOutput",
                 "Params":
                 {
+                    "Title": "Tome title",
+                    "Credentials": "Default",
+                    "L1": "en",
+                    "L2": "id",
+                    "URL": "https://api.quizlet.com/2.0"
                 }
             }
         ]
@@ -208,7 +213,7 @@
                 "Name": "runTranslate",
                 "Params":
                 {
-                    "Credentials": "./Security/AzureCredentials.json",
+                    "Credentials": "Default",
                     "L1": "en",
                     "L2": "id",
                     "SearchOneByOne": "False"

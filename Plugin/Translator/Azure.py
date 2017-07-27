@@ -53,7 +53,7 @@ inputContent, translatedInputContent)
 
     def __getAccessToken(self):
         response = None
-        credentials = self.__getCredentials()
+        credentials = self.getCredentials()
         try:
             url = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken"
             headers = {
@@ -88,18 +88,6 @@ inputContent, translatedInputContent)
         for token in tokens:
             content = "{0}'{1}'.".format(content, token.split(",")[0])
         return content[:-1].strip().lower()
-
-    def __getCredentials(self):
-        credentials = None
-        path = self.getPluginParamValue("Credentials")
-        if not os.path.isfile(path):
-            self.raiseException("Missing Azure credential file: {0}".format(path))
-        try:
-            with open(path, "r",  encoding="utf8") as fd:
-                credentials = json.load(fd)
-        except IOError as e:
-            self.raiseException(e)
-        return credentials
 
     def __getInputTranslationStr(self, inputContent, accessToken):
         return self.__getTranslation(inputContent, accessToken)

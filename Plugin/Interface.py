@@ -1,9 +1,11 @@
 from Core.Database import Database
 from Core.Error import Error
 from Core.File import File
+from Core.Framework import Framework
 from Core.Msg import Msg
 from Core.Result import Result
 from Core.Text import Text
+import inspect
 import re
 import sys
 
@@ -26,6 +28,14 @@ class Interface(object):
 
     def __getContent(self, inputType):
         return File.getContent(self.__frameworkParams[inputType])
+
+    def getCredentials(self):
+        stack = inspect.stack()
+        className = str(stack[1][0].f_locals["self"].__class__.__name__)
+        path = "{0}/{1}.json".format(Framework.getSecurityDir(), className)
+        if not File.exists(path):
+            self.raiseException("Missing {0} credentials file".format(className))
+        return File.getContent(path, asJson=True)
 
     def getFrameworkParamValue(self, name):
         return self.__frameworkParams[name]
