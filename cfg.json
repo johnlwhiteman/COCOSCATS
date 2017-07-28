@@ -51,7 +51,7 @@
         },
         "Output":
         {
-            "Plugin": "Quizlet",
+            "Plugin": "JsonFile",
             "Method": "runOutput",
             "Target": "./Test/tmp/quizletResults.txt",
             "Edit": "False",
@@ -59,7 +59,7 @@
         },
         "Demo":
         {
-            "Plugin": ["Browser"],
+            "Plugin": ["TextEditor"],
             "Method": ["run"],
             "Enable": "False"
         }

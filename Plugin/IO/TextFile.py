@@ -36,7 +36,7 @@ class TextFile(Interface):
 
 [VOCABULARY]
 {3}
-""".format(tc["l1l2"], tc["l1"], tc["l2"], "\n".join(tc["wordlist"]))
+""".format(tc["L1L2"], tc["L1"], tc["L2"], "\n".join(tc["Wordlist"]))
         content = content.strip()
         self.setOutputContent(content)
         return content

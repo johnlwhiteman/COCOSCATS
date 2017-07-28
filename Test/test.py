@@ -25,23 +25,23 @@ class Test(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def XtestCfgLoad(self):
+    def testCfgLoad(self):
         cfg = Cfg(self.cfgPath)
         cfg.load(False)
 
-    def XtestCfgLoadAndVerify(self):
+    def testCfgLoadAndVerify(self):
         cfg = Cfg(self.cfgPath)
         cfg.load(True)
         cfg = Cfg(self.cfgPath)
         cfg.load(False)
         cfg.verify()
 
-    def XtestCfgShow(self):
+    def testCfgShow(self):
         cfg = Cfg(self.cfgPath)
         cfg.load()
         cfg.show()
 
-    def XtestCocoscatsInitialize(self):
+    def testCocoscatsInitialize(self):
         cocoscats = Cocoscats(self.cfgPath)
         cocoscats.initialize()
 
@@ -123,7 +123,7 @@ class Test(unittest.TestCase):
             cocoscats.initialize()
             Cli.run(cocoscats)
 
-    def XtestFrameworkGetInstallDir(self):
+    def testFrameworkGetInstallDir(self):
         installDir = Framework.getInstallDir()
         self.assertTrue(
             os.path.isdir(installDir),

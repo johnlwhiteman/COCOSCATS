@@ -22,9 +22,6 @@ class WebSecurity(bottle.ServerAdapter):
     def __init__(self, *args, **kwargs):
         super(WebSecurity, self).__init__(*args, **kwargs)
         self._server = None
-        self.__certificatePath = "./Security/Certificate.pem"
-        self.__privateKeyPath = "./Security/PrivateKey.pem"
-        self.__publicKeyPath = "./Security/PublicKey.pem"
 
     @staticmethod
     def getSubresourceIntegrityHashes(displayValues=False):
@@ -44,8 +41,8 @@ class WebSecurity(bottle.ServerAdapter):
         srv = make_server(self.host, self.port, handler, **self.options)
         srv.socket = ssl.wrap_socket (
             srv.socket,
-            keyfile = self.__privateKeyPath,
-            certfile = self.__certificatePath,
+            keyfile = Security.getPrivateKeyPath(),
+            certfile = Security.getCertificatePemPath(),
             server_side = True)
         srv.serve_forever()
 
@@ -53,24 +50,17 @@ class WebSecurity(bottle.ServerAdapter):
         if not Text.isTrue(Web.cocoscats.cfg["Web"]["UseHttps"]):
             return
         if Text.isTrue(Web.cocoscats.cfg["Web"]["RefreshCertificate"]):
-            File.deletes([self.__certificatePath,
-                          self.__publicKeyPath,
-                          self.__privateKeyPath])
-        if not File.exist([self.__certificatePath,
-                           self.__publicKeyPath,
-                           self.__privateKeyPath]):
-            Security.generateKeysAndCertificate(self.__privateKeyPath,
-                                                self.__publicKeyPath,
-                                                self.__certificatePath)
+            Security.deleteCertsAndKeys()
+        if not Security.certsAndKeysExist():
+            Security.createCertsAndKeys(Web.cocoscats.cfg["Web"]["Host"])
 
     def setupPassword(self):
         if not Text.isTrue(Web.cocoscats.cfg["Web"]["UseAuthentication"]):
             return
-        path = "./Security/Password.json"
         if Text.isTrue(Web.cocoscats.cfg["Web"]["RefreshPassword"]):
-            File.delete(path)
-        if not File.exists(path):
-            Security.createPasswordFile(path)
+            Security.deletePassword()
+        if not Security.passwordExists():
+            Security.createPassword()
 
 class Web(object):
 

@@ -9,8 +9,8 @@ class HtmlFile(Interface):
 
     def runOutput(self):
         tc = self.getTranslatorContentAsJson()
-        tc["l1l2"] = re.sub("{","<span class=\"l2\">", tc["l1l2"])
-        tc["l1l2"] = re.sub("}","</span>", tc["l1l2"])
+        tc["L1L2"] = re.sub("{","<span class=\"L2\">", tc["L1L2"])
+        tc["L1L2"] = re.sub("}","</span>", tc["L1L2"])
 
         content = """<html lang="en">
 <head>
@@ -52,6 +52,6 @@ class HtmlFile(Interface):
 
 </body>
 </html>
-""".format(tc["l1l2"].strip(), tc["l1"], tc["l2"], "\n".join(tc["wordlist"]))
+""".format(tc["L1L2"].strip(), tc["L1"], tc["L2"], "\n".join(tc["Wordlist"]))
         self.setOutputContent(content)
         return content

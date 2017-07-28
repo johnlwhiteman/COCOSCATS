@@ -16,8 +16,8 @@ class JsonFile(Interface):
             tc["l1l2"] = str(base64.b64encode(bytes(tc["l1l2"], "utf-8")))
             tc["l1"] = str(base64.b64encode(bytes(tc["l1"], "utf-8")))
             tc["l2"] = str(base64.b64encode(bytes(tc["l1"], "utf-8")))
-            for i in range(0, len(tc["wordlist"])):
-                tc["wordlist"][i] = str(base64.b64encode(bytes(tc["wordlist"][i], "utf-8")))
-        content = {"l1l2": tc["l1l2"], "l1": tc["l1"], "l2": tc["l2"], "vocabulary": tc["wordlist"]}
+            for i in range(0, len(tc["Wordlist"])):
+                tc["Wordlist"][i] = str(base64.b64encode(bytes(tc["Wordlist"][i], "utf-8")))
+        content = {"L1L2": tc["L1L2"], "l1": tc["L1"], "l2": tc["L2"], "Vocabulary": tc["Wordlist"]}
         self.setOutputContent(json.dumps(content))
         return content
