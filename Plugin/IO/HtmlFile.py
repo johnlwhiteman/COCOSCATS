@@ -1,6 +1,4 @@
 from Plugin.Interface import Interface
-import re
-import sys
 
 class HtmlFile(Interface):
 
@@ -52,6 +50,6 @@ class HtmlFile(Interface):
 
 </body>
 </html>
-""".format(tc["L1L2"].strip(), tc["L1"], tc["L2"], "\n".join(tc["Wordlist"]))
+""".format(tc["L1L2"].strip(), tc["L1"], tc["L2"], "\n".join(tc["Vocabulary"]))
         self.setOutputContent(content)
         return content

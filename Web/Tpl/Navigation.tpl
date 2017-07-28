@@ -1,4 +1,5 @@
-<h2>Step {{step}}: {{title}}</h2>
+
+<h2>Step {{!step}}: {{!title}}</h2>
 <table>
 <tr>
 <td>{{!Input}}</td>
@@ -9,6 +10,6 @@
 <td>|</td>
 <td>{{!Output}}</td>
 <td>|</td>
-<td>{{!Demo}}</td>
+<td><a href="/View">View</td>
 </tr>
 </table>

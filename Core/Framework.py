@@ -8,8 +8,8 @@ from Core.Msg import Msg
 class Framework():
 
     @staticmethod
-    def getDatabaseDir():
-        return "{0}/Database".format(Framework.getInstallDir())
+    def getDataDir():
+        return "{0}/Data".format(Framework.getInstallDir())
 
     @staticmethod
     def getInstallDir():

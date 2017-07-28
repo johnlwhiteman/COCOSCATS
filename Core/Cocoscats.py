@@ -103,6 +103,11 @@ class Cocoscats(Cfg):
         return content
 
     def updateDatabase(self):
+        #Database.connect()
+        #projects = Database.getProject("MyProjectID")
+        #print(projects)
+        #Database.disconnect()
+        #sys.exit()
         if not Text.isTrue(self.cfg["Database"]["Enable"]):
             Msg.showWarning("Database is NOT enabled in {0}".format(self.cfgPath))
             return
@@ -116,6 +121,7 @@ class Cocoscats(Cfg):
 
             projectTable = Database.Table.Project(
                 ID=self.getProjectID(),
+                Title=Database.sanitize(self.cfg["Title"]),
                 Description=Database.sanitize(self.cfg["Description"]),
                 DateTime=self.frameworkParams["dateTime"],
                 Workflow=self.cfg["Workflow"])
@@ -139,7 +145,7 @@ class Cocoscats(Cfg):
             translatorTable = Database.Table.Translator(
                 ProjectID=projectTable,
                 Content=content,
-                ContentJson=Result.getTranslatorContentAsJson(content),
+                ContentParsed=Result.parseTranslatorContent(content),
                 PluginName=Database.sanitize(self.cfg["Workflow"]["Translator"]["Plugin"]),
                 PluginMethod=Database.sanitize(self.cfg["Workflow"]["Translator"]["Method"]),
                 Plugin=self.cfg["Workflow"]["Translator"])

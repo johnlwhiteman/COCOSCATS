@@ -16,7 +16,7 @@ class Test(unittest.TestCase):
     def setUp(self):
         self.testDir = Framework.getTestDir()
         self.databaseName = "CocoscatsTest"
-        self.databasePath = "{0}/{1}".format(Framework.getDatabaseDir(), self.databaseName)
+        self.databasePath = "{0}/{1}".format(Framework.getDataDir(), self.databaseName)
         self.cfgPath = "{0}/test.json".format(self.testDir)
         self.tmpCfgPath = "{0}/Tmp/tmp.json".format(self.testDir)
         warnings.simplefilter("ignore", category=DeprecationWarning)

@@ -50,7 +50,7 @@ class Quizlet(Interface):
         url = "{0}/sets".format(self.getPluginParamValue("URL"))
         L1 = []
         L2 = []
-        for word in self.getTranslatorContentAsJson()["Vocabulary"]:
+        for word in self.getTranslatorContentAsJson()["VocabularyParsed"]:
             L1.append(word["L1"])
             L2.append(word["L2"])
         content = {

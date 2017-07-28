@@ -1,3 +1,4 @@
+import bleach
 import json
 import os
 from pony import orm
@@ -12,9 +13,9 @@ from Core.Text import Text
 
 # Reference: https://www.blog.pythonlibrary.org/2014/07/21/python-101-an-intro-to-pony-orm/
 class Database():
-    directory = Framework.getDatabaseDir()
+    directory = Framework.getDataDir()
     name = "Cocoscats"
-    path = "{0}/{1}.db".format(Framework.getDatabaseDir(), name)
+    path = "{0}/{1}.db".format(directory, name)
     debugFlag = False
     ORM = orm
     ODB = orm.Database()
@@ -25,6 +26,10 @@ class Database():
         Analyzer = NotImplemented
         Translator = NotImplemented
         Output = NotImplemented
+
+    @staticmethod
+    def checkProjectExists(projectID):
+        return Database.getProject(projectID) is not None
 
     @staticmethod
     def commit():
@@ -87,7 +92,7 @@ class Database():
         with Database.ORM.db_session:
             result = Database.Table.Analyzer.get(ProjectID=projectID)
             if result is None:
-                return None
+                return result
             return {
                 "ID": result.ID,
                 "ProjectID": projectID,
@@ -102,7 +107,7 @@ class Database():
         with Database.ORM.db_session:
             result = Database.Table.Input.get(ProjectID=projectID)
             if result is None:
-                return None
+                return result
             return {
                 "ID": result.ID,
                 "ProjectID": projectID,
@@ -118,7 +123,7 @@ class Database():
         with Database.ORM.db_session:
             result = Database.Table.Output.get(ProjectID=projectID)
             if result is None:
-                return None
+                return result
             return {
                 "ID": result.ID,
                 "ProjectID": projectID,
@@ -131,8 +136,53 @@ class Database():
 
     @staticmethod
     def getProject(projectID):
+        result = {
+            "ProjectID": projectID,
+            "Message": "",
+            "Error": False,
+            "Title": "",
+            "Description": "",
+            "DataTime": "",
+            "Vocabulary": [],
+            "VocabularyParsed": [],
+            "VocabularyCnt": 0,
+            "Rejected": [],
+            "RejectedCnt": 0,
+            "L1": "",
+            "L2": "",
+            "L1L2": "",
+        }
+        projectDetails = Database.getProjectDetails(projectID)
+        if projectDetails is not None:
+            result["Title"] = projectDetails["Title"]
+            result["Description"] = projectDetails["Description"]
+            result["DateTime"] = projectDetails["DateTime"]
+        else:
+            result["Error"] = True
+            result["Message"] = "No project found with ID: {0}".format(projectID)
+            return result
+        translatorContent = Database.getTranslatorContent(projectID)
+        if translatorContent is not None and "ContentParsed" in translatorContent:
+            result["Vocabulary"] = translatorContent["ContentParsed"]["Vocabulary"]
+            result["VocabularyParsed"] = translatorContent["ContentParsed"]["VocabularyParsed"]
+            result["VocabularyCnt"] = translatorContent["ContentParsed"]["VocabularyCnt"]
+            result["Rejected"] = translatorContent["ContentParsed"]["Rejected"]
+            result["RejectedCnt"] = translatorContent["ContentParsed"]["RejectedCnt"]
+            result["L1"] = translatorContent["ContentParsed"]["L1"]
+            result["L2"] = translatorContent["ContentParsed"]["L2"]
+            result["L1L2"] = translatorContent["ContentParsed"]["L1L2"]
+        else:
+            result["Error"] = True
+            result["Message"] = "No content found for project ID: {0}".format(projectID)
+        return result
+
+    @staticmethod
+    def getProjectAll(projectID):
         result = {}
+        result["ProjectID"] = projectID
         result["Project"] = Database.getProjectDetails(projectID)
+        if result["Project"] is None:
+            return None
         result["Input"] = Database.getInputContent(projectID)
         result["Analyzer"] = Database.getAnalyzerContent(projectID)
         result["Translator"] = Database.getTranslatorContent(projectID)
@@ -144,25 +194,37 @@ class Database():
         with Database.ORM.db_session:
             result = Database.Table.Project.get(ID=projectID)
             if result is None:
-                return None
+                return result
             return {
                 "ID": result.ID,
+                "Title": result.Title,
                 "Description": result.Description,
                 "DateTime": result.DateTime,
                 "Workflow": result.Workflow
             }
 
     @staticmethod
+    def getAllProjectDetails():
+        with Database.ORM.db_session:
+            result = Database.Table.Project.select()
+            if result is None or result.count() < 1:
+                return None
+            projects = []
+            for r in result:
+                projects.append(Database.getProjectDetails(r.ID))
+            return projects
+
+    @staticmethod
     def getTranslatorContent(projectID):
         with Database.ORM.db_session:
             result =  Database.Table.Translator.get(ProjectID=projectID)
             if result is None:
-                return None
+                return result
             return {
                 "ID": result.ID,
                 "ProjectID": projectID,
                 "Content": result.Content,
-                "ContentJson": result.ContentJson,
+                "ContentParsed": result.ContentParsed,
                 "PluginName": result.PluginName,
                 "PluginMethod": result.PluginMethod,
                 "Plugin": result.Plugin
@@ -172,7 +234,7 @@ class Database():
     def sanitize(something):
         if something is str:
             something = something.replace("'", "\\'")
-        return something
+        return bleach.clean(something)
 
     @staticmethod
     def setDebug(debugFlag):
@@ -181,10 +243,11 @@ class Database():
     @staticmethod
     def setName(name):
         Database.name = name
-        Database.path = "{0}/{1}.db".format(Framework.getDatabaseDir(), name)
+        Database.path = "{0}/{1}.db".format(Framework.getDataDir(), name)
 
 class Project(Database.ODB.Entity):
     ID = orm.PrimaryKey(str)
+    Title = orm.Required(str)
     Description = orm.Required(str)
     DateTime = orm.Required(str)
     Workflow = orm.Optional(orm.Json)
@@ -214,7 +277,7 @@ class Translator(Database.ODB.Entity):
     ID = orm.PrimaryKey(int, auto=True)
     ProjectID = orm.Required(Project)
     Content = orm.Required(orm.LongStr)
-    ContentJson = orm.Required(orm.Json)
+    ContentParsed = orm.Required(orm.Json)
     PluginName = orm.Optional(str)
     PluginMethod = orm.Optional(str)
     Plugin = orm.Optional(orm.Json)

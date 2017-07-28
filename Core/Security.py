@@ -38,7 +38,7 @@ class Security():
         for path in [Security.__privateKeyPath,
                      Security.__publicKeyPath,
                      Security.__certificatePemPath]:
-            if File.exists(path):
+            if not File.exists(path):
                 return False
         if Security.hasOpenSSL():
             return File.exists(Security.__certificateCrtPath)

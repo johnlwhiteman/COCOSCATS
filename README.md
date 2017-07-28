@@ -14,28 +14,30 @@ The translations are word-for-word without regard to proper grammar structure in
 
 ## Dependencies
 
-* Python >= 3.6.0 (Highly recommend Anaconda >= 4.3.1) 
+* Python >= 3.6.0 (Highly recommend Anaconda >= 4.3.1)
   * [https://www.continuum.io/downloads]
   (https://www.continuum.io/downloads)
-* A Microsoft Azure account with access to the Cognitive Services Language Translator if you want to use the Azure.py translator plugin 
+* A Microsoft Azure account with access to the Cognitive Services Language Translator if you want to use the Azure.py translator plugin
 
 ## Installation
 
 * Download and install Python (see dependencies above)
-* *git clone https://github.com/johnlwhiteman/COCOSCATS.git*
-* *cd COCOSCATS*
-* *python setup.py install*
+* *git clone https://github.com/johnlwhiteman/Cocoscats.git*
+* *cd Cocoscats*
+* *python install*
 
 ## Execution
+
+You can run Cocoscats from the command line or as a web application.
 
 ### - Command Mode
 
 * *python ./run.py -C*
 
-### -Web Mode
+### - Web Mode
 
 * *python ./run.py -W*
 
 ## Configuration File
 
-This is a big todo
+This is a big TODO.

@@ -1,6 +1,7 @@
 {
-    "ProjectID": "MyProject123",
-    "Description": "Some descriptions goes here!",
+    "ProjectID": "MyProjectID",
+    "Title": "My Project's Title",
+    "Description": "My project's description.",
     "Database":
     {
         "Name": "Cocoscats",
@@ -12,6 +13,7 @@
     {
         "Browser":
         [
+            "Default",
             "C:/Program Files (x86)/Mozilla Firefox/firefox.exe %s",
             "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s",
             "Default"
@@ -22,8 +24,8 @@
         "RefreshCertificate": "False",
         "RefreshPassword": "False",
         "Reloader": "False",
-        "UseAuthentication": "True",
-        "UseHttps": "True"
+        "UseAuthentication": "False",
+        "UseHttps": "False"
     },
     "Workflow":
     {
@@ -51,9 +53,9 @@
         },
         "Output":
         {
-            "Plugin": "JsonFile",
+            "Plugin": "XmlFile",
             "Method": "runOutput",
-            "Target": "./Test/tmp/quizletResults.txt",
+            "Target": "./Test/tmp/quizletResults.xml",
             "Edit": "False",
             "Debug": "False"
         },
@@ -176,7 +178,10 @@
         [
             {
                 "Name": "runOutput",
-                "Params": {}
+                "Params":
+                {
+                    "EncodeWithBase64": "False"
+                }
             }
         ]
         },

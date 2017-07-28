@@ -6,6 +6,15 @@ body {
   font-weight: normal;
 }
 
+pre {
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-style: normal;
+  letter-spacing: inherit;
+  font-weight: inherit;
+}
+
 table {
     border-spacing: 3px;
 }
@@ -23,24 +32,11 @@ textarea {
   width: 500px;
 }
 
-.cfgName {
-  color: gray;
-  font-family: inherit;
-  font-size: inherit;
-  font-style: inherit;
-  font-weight: inherit;
-  text-decoration: underline;
-}
-
-.cfgValue {
-  color: gray;
-  font-family: inherit;
-  font-size: inherit;
-  font-style: italic;
-  font-weight: inherit;
-}
-
 .csDiv {
+  margin-top: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  margin-left: 10px;
   font-family: inherit;
   font-size: inherit;
   font-style: inherit;
@@ -48,15 +44,33 @@ textarea {
   text-align: left;
 }
 
-.errMsg {
+.csErrMsg {
   color: red;
   font-family: inherit;
   font-size: inherit;
-  font-style: italic;
+  font-style: normal;
+  font-weight: bold;
+}
+
+.csL1 {
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-style: normal;
+  letter-spacing: inherit;
   font-weight: inherit;
 }
 
-.okMsg {
+.csL2 {
+  color: blue;
+  font-family: inherit;
+  font-size: inherit;
+  font-style: normal;
+  letter-spacing: inherit;
+  font-weight: bold;
+}
+
+.csOkMsg {
   color: green;
   font-family: inherit;
   font-size: inherit;
@@ -64,13 +78,13 @@ textarea {
   font-weight: inherit;
 }
 
-#footer {
+#csFooter {
   color: grey;
   text-align: center;
   font-style: italic;
 }
 
-#navTitle {
+#csNavTitle {
   font-weight: bold;
   font-style: italic;
 }

@@ -1,6 +1,7 @@
+import nltk
 import pip
 
-PACKAGES = ["beaker", "bottle", "nltk", "numpy", "passlib", "pony", "requests", "wikiapi"]
+PACKAGES = ["beaker", "bleach", "bottle", "nltk", "numpy", "passlib", "pony", "requests", "wikiapi"]
 
 def installPackages():
     for package in PACKAGES:

@@ -71,7 +71,7 @@ class Interface(object):
         return self.__getContent("translatorPath")
 
     def getTranslatorContentAsJson(self):
-        return Result.getTranslatorContentAsJson(self.getTranslatorContent())
+        return Result.parseTranslatorContent(self.getTranslatorContent())
 
     def getTranslatorContentFromDatabase(self):
         return Database.getTranslatorContent(self.getProjectID())

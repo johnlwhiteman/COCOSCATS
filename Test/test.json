@@ -1,6 +1,7 @@
 {
-    "ProjectID": "SlappyFour",
-    "Description": "FFFJohn's Goodness goes here",
+    "ProjectID": "MyTestProjectID",
+    "Title": "My Test Project's Title",
+    "Description": "My test project's description.",
     "Database":
     {
         "Name": "CocoscatsTest",

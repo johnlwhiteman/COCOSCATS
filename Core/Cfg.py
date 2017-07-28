@@ -43,8 +43,8 @@ class Cfg(object):
 
     def getPlugins(self):
         if len(self.cfg["Plugin"]) < 1:
-            return """{"Plugin:":[]}"""
-        return json.loads(json.dumps({"Plugin": self.cfg["Plugin"]}))
+            return {"Plugin:":[]}
+        return {"Plugin": self.cfg["Plugin"]}
 
     def getPluginsByType(self, pluginType):
         plugins = []
@@ -54,8 +54,8 @@ class Cfg(object):
             if plugin["Type"] == pluginType:
                 plugins.append(plugin)
         if len(plugins) < 1:
-            return """{"Plugin:":[]}"""
-        return json.loads(json.dumps({"Plugin": plugins}))
+            return {"Plugin:":[]}
+        return {"Plugin": plugins}
 
     def getPluginMethod(self, pluginType, pluginName, pluginMethod):
         methods = self.getPlugin(pluginType, pluginName)["Method"]
@@ -69,8 +69,8 @@ class Cfg(object):
     def getPluginMethods(self, pluginType, pluginName):
         methods = self.getPlugin(pluginType, pluginName)["Method"]
         if methods is None or len(methods) < 1:
-            return """{"Methods:":[]}"""
-        return json.loads(json.dumps({"Method": methods}))
+            return {"Methods:":[]}
+        return {"Method": methods}
 
     def getProjectDescription(self):
         return self.cfg["Description"]

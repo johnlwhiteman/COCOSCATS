@@ -9,9 +9,11 @@ import threading
 import time
 import webbrowser
 from wsgiref.simple_server import make_server, WSGIRequestHandler
+from Core.Database import Database
 from Core.Directory import Directory
 from Core.File import File
 from Core.Framework import Framework
+from Core.Msg import Msg
 from Core.Security import Security
 from Core.Text import Text
 
@@ -52,6 +54,7 @@ class WebSecurity(bottle.ServerAdapter):
         if Text.isTrue(Web.cocoscats.cfg["Web"]["RefreshCertificate"]):
             Security.deleteCertsAndKeys()
         if not Security.certsAndKeysExist():
+            print("HELLO")
             Security.createCertsAndKeys(Web.cocoscats.cfg["Web"]["Host"])
 
     def setupPassword(self):
@@ -111,8 +114,7 @@ class Web(object):
                 port = Web.cocoscats.cfg["Web"]["Port"],
                 reloader = Text.toTrueOrFalse(Web.cocoscats.cfg["Web"]["Reloader"])
                 )).start()
-        sys.stdout.flush()
-        sys.stderr.flush()
+        Msg.flush()
         for client in Web.cocoscats.cfg["Web"]["Browser"]:
             if Text.isNothing(client) or client.lower() == "default":
                 if webbrowser.open(Web.url):
@@ -141,8 +143,8 @@ class WebApp(object):
         return bottle.template("Web/Tpl/Editor.tpl", replace)
 
     @staticmethod
-    def getFooter():
-        replace = {"year": "2017"}
+    def getFooter(scripts=""):
+        replace = {"year": "2017", "scripts": scripts}
         year = time.strftime("%Y")
         if year != replace["year"]:
             replace["year"] = "{0}-{1}".format(replace["year"], year)
@@ -175,32 +177,32 @@ class WebApp(object):
             "Analyzer": "Analyzer",
             "Translator": "Translator",
             "Output": "Output",
-            "Demo": "Demo"
+            "View": "View"
         }
         if title == "Input":
-            replace["Input"] = """<span id="navTitle">Input</span>"""
+            replace["Input"] = """<span id="csNavTitle">Input</span>"""
             replace["Analyzer"] = """<a href="/Analyzer">Analyzer</a>"""
         elif title == "Analyzer":
             replace["Input"]  = """<a href="/Input">Input</a>"""
-            replace["Analyzer"] = """<span id="navTitle">Analyzer</span>"""
+            replace["Analyzer"] = """<span id="csNavTitle">Analyzer</span>"""
             replace["Translator"]  = """<a href="/Translator">Translator</a>"""
         elif title == "Translator":
             replace["Input"] = """<a href="/Input">Input</a>"""
             replace["Analyzer"] = """<a href="/Analyzer">Analyzer</a>"""
-            replace["Translator"] = """<span id="navTitle">Translator</span>"""
+            replace["Translator"] = """<span id="csNavTitle">Translator</span>"""
             replace["Output"] = """<a href="/Output">Output</a>"""
         elif title == "Output":
             replace["Input"] = """<a href="/Input">Input</a>"""
             replace["Analyzer"] = """<a href="/Analyzer">Analyzer</a>"""
             replace["Translator"] = """<a href="/Translator">Translator</a>"""
-            replace["Output"] = """<span id="navTitle">Output</span>"""
-            replace["Demo"] = """<a href="/Demo">Demo</a>"""
-        elif title == "Demo":
+            replace["Output"] = """<span id="csNavTitle">Output</span>"""
+            replace["View"] = """<a href="/View">View</a>"""
+        elif title == "View":
             replace["Input"] = """<a href="/Input">Input</a>"""
             replace["Analyzer"] = """<a href="/Analyzer">Analyzer</a>"""
             replace["Translator"] = """<a href="/Translator">Translator</a>"""
             replace["Output"] = """<a href="/Output">Output</a>"""
-            replace["Demo"] = """<span id="navTitle">Demo</span>"""
+            replace["View"] = """<span id="csNavTitle">View</span>"""
         return bottle.template("Web/Tpl/Navigation.tpl", replace)
 
     @staticmethod
@@ -222,8 +224,7 @@ class WebApp(object):
         bottle.response.set_header("REFRESH", "{0};{1}".format(delay, url))
 
     @bottle.route("/Analyzer")
-    @bottle.route("/Analyzer/<action>")
-    @bottle.route("/Analyzer/<action>", method="POST")
+    @bottle.route("/Analyzer/<action>", method=["GET","POST"])
     def __runAnalyzer(action=None):
         WebApp.checkAuthentication()
         header = WebApp.getHeader("Analyzer")
@@ -246,8 +247,7 @@ class WebApp(object):
         return "{0}{1}{2}".format(header, body, footer)
 
     @bottle.route("/Input")
-    @bottle.route("/Input/<action>")
-    @bottle.route("/Input/<action>", method="POST")
+    @bottle.route("/Input/<action>", method=["GET","POST"])
     def __runInput(action=None):
         WebApp.checkAuthentication()
         header = WebApp.getHeader("Input")
@@ -271,8 +271,7 @@ class WebApp(object):
         return "{0}{1}{2}".format(header, body, footer)
 
     @bottle.route("/Output")
-    @bottle.route("/Output/<action>")
-    @bottle.route("/Output/<action>", method="POST")
+    @bottle.route("/Output/<action>", method=["GET","POST"])
     def __runOutput(action=None):
         WebApp.checkAuthentication()
         header = WebApp.getHeader("Output")
@@ -307,8 +306,7 @@ class WebApp(object):
         WebApp.__redirect("/Input")
 
     @bottle.route("/Translator")
-    @bottle.route("/Translator/<action>")
-    @bottle.route("/Translator/<action>", method="POST")
+    @bottle.route("/Translator/<action>", method=["GET","POST"])
     def __runTranslator(action=None):
         WebApp.checkAuthentication()
         header = WebApp.getHeader("Translator")
@@ -329,15 +327,16 @@ class WebApp(object):
         body = """{0}{1}""".format(navigation, editor)
         return "{0}{1}{2}".format(header, body, footer)
 
-    @bottle.route("/Demo")
-    @bottle.route("/Demo/<action>")
-    @bottle.route("/Demo/<action>", method="POST")
-    def __runDemo(action=None):
+    @bottle.route("/View")
+    @bottle.route("/View/<projectID>", method=["GET","POST"])
+    def __runView(projectID=None):
         WebApp.checkAuthentication()
-        header = WebApp.getHeader("Demo")
-        footer = WebApp.getFooter()
-        navigation = WebApp.getNavigation("Demo", 4)
-        body = """{0}""".format(navigation)
+        script = """<script src="/Web/Js/CocoscatsView.js"></script>"""
+        header = WebApp.getHeader("View")
+        footer = WebApp.getFooter(script)
+        navigation = WebApp.getNavigation("View", 4)
+        body = """{0}{1}""".format(navigation,
+               bottle.template("Web/Tpl/View.tpl", {}))
         return "{0}{1}{2}".format(header, body, footer)
 
     @bottle.get("/Web/Css/<path:re:.*\.css>")
@@ -419,8 +418,7 @@ class WebApp(object):
             bottle.template("Web/Tpl/Index.tpl", {}),
             WebApp.getFooter())
 
-    @bottle.route("/Login")
-    @bottle.route("/Login", method="POST")
+    @bottle.route("/Login", method=["GET","POST"])
     def __showLogin():
         p = bottle.request.forms.get("password")
         if p is not None:
@@ -447,10 +445,49 @@ class WebApp(object):
 
 class WebApi(WebApp):
 
-    @bottle.route("/Api/GetPlugins")
-    @bottle.route("/Api/GetPlugins/<pluginType>")
-    def __getPlugins(pluginType=None):
+    @staticmethod
+    def __exists(projectID):
         WebApi.checkAuthentication()
+        Database.connect()
+        result = Database.checkProjectExists(projectID)
+        Database.disconnect()
+        return result
+
+    @staticmethod
+    def __run(api, *args):
+        WebApi.checkAuthentication()
+        Database.connect()
+        argCnt = len(args)
+        if argCnt < 1:
+            result = api()
+        elif argCnt == 1:
+            result = api(args[0])
+        Database.disconnect()
+        bottle.response.content_type = "application/json"
+        return json.dumps(result)
+
+    @bottle.route("/Api/GetPlugins", method=["GET","POST"])
+    @bottle.route("/Api/GetPlugins/<pluginType>", method=["GET","POST"])
+    def getPlugins(pluginType=None):
         if pluginType == None:
-            return Web.cocoscats.getPlugins()
-        return Web.cocoscats.getPluginsByType(pluginType)
+            return WebApi.__run(Web.cocoscats.getPlugins)
+        return WebApi.__run(Web.cocoscats.getPluginsByType, pluginType)
+
+    @bottle.route("/Api/GetProject", method=["GET","POST"])
+    @bottle.route("/Api/GetProject/<projectID>", method=["GET","POST"])
+    def getProject(projectID=None):
+        if projectID is None:
+            return "You need to specify a project ID"
+        if WebApi.__exists(projectID):
+            return WebApi.__run(Database.getProject, projectID)
+        return "Project ID does not exist: {0}".format(projectID)
+
+    @bottle.route("/Api/GetProjectDetails", method=["GET","POST"])
+    @bottle.route("/Api/GetProjectDetails/<projectID>", method=["GET","POST"])
+    def getProjectDetails(projectID=None):
+        if projectID == None:
+            return WebApi.__run(Database.getAllProjectDetails)
+        if WebApi.__exists(projectID):
+            return WebApi.__run(Database.getProjectDetails, projectID)
+        return "Project ID does not exist: {0}".format(projectID)
+
