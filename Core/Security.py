@@ -20,12 +20,12 @@ from Core.Text import Text
 # Reference: https://tenzer.dk/generating-subresource-integrity-checksums/
 # openssl req -new -x509 -keyout server.pem -out server.pem -days 365 -nodes
 class Security():
-
-    __certificatePemPath = "{0}/Certificate.pem".format(Framework.getSecurityDir())
-    __certificateCrtPath = "{0}/Certificate.crt".format(Framework.getSecurityDir())
-    __passwordPath = "{0}/Password.json".format(Framework.getSecurityDir())
-    __privateKeyPath = "{0}/PrivateKey.pem".format(Framework.getSecurityDir())
-    __publicKeyPath = "{0}/PublicKey.pem".format(Framework.getSecurityDir())
+    __vaultDir = Framework.getVaultDir()
+    __certificatePemPath = "{0}/Certificate.pem".format(__vaultDir)
+    __certificateCrtPath = "{0}/Certificate.crt".format(__vaultDir)
+    __passwordPath = "{0}/Password.json".format(__vaultDir)
+    __privateKeyPath = "{0}/PrivateKey.pem".format(__vaultDir)
+    __publicKeyPath = "{0}/PublicKey.pem".format(__vaultDir)
 
     @staticmethod
     def authenticate(path, password=None):
@@ -88,13 +88,6 @@ class Security():
                        {"Password": h}, asJson=True)
 
     @staticmethod
-    def hasOpenSSL():
-        if File.find("openssl") is not None:
-            return True
-        ret = os.system("openssl version")
-        return ret == 0
-
-    @staticmethod
     def deleteCertsAndKeys():
         File.deletes([Security.__certificateCrtPath,
                       Security.__certificatePemPath,
@@ -130,6 +123,13 @@ class Security():
         content = File.getContent(path)
         hash = hashlib.sha512(content.encode("utf-8")).digest()
         return "sha512-{}".format(base64.b64encode(hash).decode())
+
+    @staticmethod
+    def hasOpenSSL():
+        if File.find("openssl") is not None:
+            return True
+        ret = os.system("openssl version")
+        return ret == 0
 
     @staticmethod
     def hashAndSaltPassword(password):

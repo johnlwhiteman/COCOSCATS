@@ -71,7 +71,7 @@ class Web(object):
     useHttps = NotImplemented
     useAuthentication = NotImplemented
     url = NotImplemented
-    schema = NotImplemented
+    scheme = NotImplemented
 
     def run(cocoscats):
         Web.cocoscats = cocoscats
@@ -86,8 +86,8 @@ class Web(object):
             WebSecurity.getSubresourceIntegrityHashes(True)
 
         if Web.useHttps:
-            Web.schema = "https"
-            Web.url = "{0}://{1}:{2}/".format(Web.schema,
+            Web.scheme = "https"
+            Web.url = "{0}://{1}:{2}/".format(Web.scheme,
                                                 Web.cocoscats.cfg["Web"]["Host"],
                                                 Web.cocoscats.cfg["Web"]["Port"])
             server = WebSecurity(host=Web.cocoscats.cfg["Web"]["Host"],
@@ -102,8 +102,8 @@ class Web(object):
                 server = server
                 )).start()
         else:
-            Web.schema = "http"
-            Web.url = "{0}://{1}:{2}/".format(Web.schema,
+            Web.scheme = "http"
+            Web.url = "{0}://{1}:{2}/".format(Web.scheme,
                                               Web.cocoscats.cfg["Web"]["Host"],
                                               Web.cocoscats.cfg["Web"]["Port"])
             threading.Thread(target=bottle.run,
@@ -214,7 +214,7 @@ class WebApp(object):
 
     @staticmethod
     def __redirect(path, delay=None):
-        url = "{0}://{1}:{2}{3}".format(Web.schema,
+        url = "{0}://{1}:{2}{3}".format(Web.scheme,
                                       Web.cocoscats.cfg["Web"]["Host"],
                                       Web.cocoscats.cfg["Web"]["Port"],
                                       path)
@@ -490,4 +490,3 @@ class WebApi(WebApp):
         if WebApi.__exists(projectID):
             return WebApi.__run(Database.getProjectDetails, projectID)
         return "Project ID does not exist: {0}".format(projectID)
-

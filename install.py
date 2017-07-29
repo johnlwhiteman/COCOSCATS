@@ -1,7 +1,8 @@
 import nltk
 import pip
 
-PACKAGES = ["beaker", "bleach", "bottle", "nltk", "numpy", "passlib", "pony", "requests", "wikiapi"]
+PACKAGES = ["apiclient", "beaker", "bleach", "bottle", "google-api-python-client",
+            "httplib2", "nltk", "numpy", "passlib", "pony", "requests", "wikiapi"]
 
 def installPackages():
     for package in PACKAGES:

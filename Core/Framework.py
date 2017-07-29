@@ -32,12 +32,12 @@ class Framework():
         return "{0}/Plugin".format(Framework.getInstallDir())
 
     @staticmethod
-    def getSecurityDir():
-        return "{0}/Security".format(Framework.getInstallDir())
-
-    @staticmethod
     def getTestDir():
         return "{0}/Test".format(Framework.getInstallDir())
+
+    @staticmethod
+    def getVaultDir():
+        return "{0}/Vault".format(Framework.getInstallDir())
 
     @staticmethod
     def getWebDir():

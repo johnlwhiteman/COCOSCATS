@@ -31,9 +31,9 @@
     {
         "Input":
         {
-            "Plugin": "TextFile",
-            "Method": "runInput",
-            "Source": "./Test/house.txt",
+            "Plugin": "YouTube",
+            "Method": "runInputUsingRemoteFile",
+            "Source": "https://www.youtube.com/watch?v=KkvXcxRLzwk",
             "Edit": "False",
             "Debug": "False"
         },
@@ -53,15 +53,15 @@
         },
         "Output":
         {
-            "Plugin": "XmlFile",
-            "Method": "runOutput",
-            "Target": "./Test/tmp/quizletResults.xml",
+            "Plugin": "YouTube",
+            "Method": "runOutputUsingRemoteFile",
+            "Target": "",
             "Edit": "False",
             "Debug": "False"
         },
         "Demo":
         {
-            "Plugin": ["TextEditor"],
+            "Plugin": ["Browser"],
             "Method": ["run"],
             "Enable": "False"
         }
@@ -181,6 +181,53 @@
                 "Params":
                 {
                     "EncodeWithBase64": "False"
+                }
+            }
+        ]
+        },
+        {
+        "Name": "YouTube",
+        "Type": "IO",
+        "Version": "1.0.0",
+        "Author" : "Google Inc.",
+        "Description": "An IO plugin to handle simple XML files.",
+        "Link": ["https://developers.google.com/youtube/"],
+        "Method":
+        [
+            {
+                "Name": "runInputUsingLocalFile",
+                "Params":
+                {
+                }
+            },
+            {
+                "Name": "runInputUsingRemoteFile",
+                "Params":
+                {
+                    "CaptionID": "",
+                    "CaptionName": "A Cocoscats Generated Caption",
+                    "Format": "srt",
+                    "IsDraft": "False",
+                    "L1": "en",
+                    "RefreshOAUTH2AccessToken": "True"
+                }
+            },
+            {
+                "Name": "runOutputUsingLocalFile",
+                "Params":
+                {
+                }
+            },
+            {
+                "Name": "runOutputUsingRemoteFile",
+                "Params":
+                {
+                    "CaptionID": "",
+                    "CaptionName": "A Cocoscats Generated Caption",
+                    "Format": "srt",
+                    "IsDraft": "False",
+                    "L1": "en",
+                    "RefreshOAUTH2AccessToken": "True"
                 }
             }
         ]

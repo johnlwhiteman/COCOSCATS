@@ -7,8 +7,8 @@ class Result():
         idx = []
         for section in ["[VOCABULARY]", "[REJECTED]", "[L1]", "[L2]"]:
             idx.append(tokens.index(section))
-        L1 = list(filter(None, tokens[idx[2]+1:idx[3]]))[0].strip()
-        L2 = list(filter(None, tokens[idx[3]+1:]))[0].strip()
+        L1 = "\n".join(tokens[idx[2]+1:idx[3]]).strip()
+        L2 = "\n".join(tokens[idx[3]+1:]).strip()
         L1L2 = L1
         vocabularyParsed = []
         vocabulary = list(filter(None, tokens[idx[0]+1:idx[1]]))
@@ -27,4 +27,3 @@ class Result():
             "L2": L2,
             "L1L2": L1L2
         }
-

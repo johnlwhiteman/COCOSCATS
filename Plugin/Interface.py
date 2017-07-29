@@ -32,7 +32,7 @@ class Interface(object):
     def getCredentials(self):
         stack = inspect.stack()
         className = str(stack[1][0].f_locals["self"].__class__.__name__)
-        path = "{0}/{1}.json".format(Framework.getSecurityDir(), className)
+        path = "{0}/{1}.json".format(Framework.getVaultDir(), className)
         if not File.exists(path):
             self.raiseException("Missing {0} credentials file".format(className))
         return File.getContent(path, asJson=True)
@@ -75,6 +75,15 @@ class Interface(object):
 
     def getTranslatorContentFromDatabase(self):
         return Database.getTranslatorContent(self.getProjectID())
+
+    def getVaultContent(self, name, asJson=False):
+        path = "{0}/{1}".format(Framework.getVaultDir(), name)
+        return File.getContent(path, asJson)
+
+    def getVaultPath(self, name=None):
+        if name is None:
+            return Framework.getVaultDir()
+        return "{0}/{1}".format(Framework.getVaultDir(), name)
 
     def getWorkflowSource(self):
         return self.__workflowPluginParams["__workflowSourcePath__"]

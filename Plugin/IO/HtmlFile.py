@@ -1,4 +1,5 @@
 from Plugin.Interface import Interface
+import re
 
 class HtmlFile(Interface):
 
