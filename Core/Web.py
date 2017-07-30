@@ -470,12 +470,12 @@ class WebApp(object):
     def __showIndex(path="index.html"):
         if not Web.useAuthentication or WebApp.__isAuthenticated():
             return """{0}{1}{2}""".format(
-                WebApp.getHeader("Welcome to Cocoscats"),
+                WebApp.getHeader("Welcome to CoCoScatS"),
                 bottle.template("Web/Tpl/Index.tpl", {}),
                 WebApp.getFooter())
         else:
             return """{0}{1}{2}""".format(
-                WebApp.getHeader("Welcome to Cocoscats"),
+                WebApp.getHeader("Welcome to CoCoScatS"),
                 bottle.template("Web/Tpl/Login.tpl", {}),
                 WebApp.getFooter())
 
@@ -492,7 +492,7 @@ class WebApp(object):
             else:
                 WebApp.__setSession("authenticated", "False")
         return """{0}{1}{2}""".format(
-            WebApp.getHeader("Welcome to Cocoscats"),
+            WebApp.getHeader("Welcome to CoCoScatS"),
             bottle.template("Web/Tpl/Login.tpl", {}),
             WebApp.getFooter())
 

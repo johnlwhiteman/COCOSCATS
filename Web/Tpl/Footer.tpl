@@ -5,7 +5,7 @@
 {{!scripts}}
 <div id="csFooter">
 <hr/>
-Contextually Correct Scatter Substitution (COCOSCATS)
+Contextually Correct Scatter Substitution (CoCoScatS)
 <br/>
 A Content Generation Framework for Foreign Language Learning Plebes
 <br/>
