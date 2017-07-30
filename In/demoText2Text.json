@@ -1,0 +1,331 @@
+{
+    "ProjectID": "DemoText2Text",
+    "Title": "Text to Text Demo",
+    "Description": "A simple text to text workflow demot",
+    "Database":
+    {
+        "Name": "Cocoscats",
+        "Enable": "True",
+        "Debug": "False",
+        "Rebuild": "False"
+    },
+    "Web":
+    {
+        "Browser":
+        [
+            "C:/Program Files (x86)/Mozilla Firefox/firefox.exe %s",
+            "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s",
+            "Default"
+        ],
+        "Debug": "True",
+        "Host": "127.0.0.1",
+        "Port": "12345",
+        "RefreshCertificate": "False",
+        "RefreshPassword": "False",
+        "Reloader": "False",
+        "UseAuthentication": "True",
+        "UseHttps": "True"
+    },
+    "Workflow":
+    {
+        "Input":
+        {
+            "Plugin": "TextFile",
+            "Method": "runInput",
+            "Source": "./In/demoText2Text.txt",
+            "Edit": "True",
+            "Debug": "False"
+        },
+        "Analyzer":
+        {
+            "Plugin": "Nltk",
+            "Method": "runSingleWords",
+            "Edit": "True",
+            "Debug": "False"
+        },
+        "Translator":
+        {
+            "Plugin": "Azure",
+            "Method": "runTranslate",
+            "Edit": "True",
+            "Debug": "False"
+        },
+        "Output":
+        {
+            "Plugin": "TextFile",
+            "Method": "runOutput",
+            "Target": "./Out/demoText2Text.txt",
+            "Edit": "True",
+            "Debug": "False"
+        },
+        "Demo":
+        {
+            "Plugin": ["TextEditor"],
+            "Method": ["run"],
+            "Enable": "True"
+        }
+    },
+    "Plugin":
+    [
+        {
+        "Name": "HtmlFile",
+        "Type": "IO",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "An IO plugin to handle simple HTML files.",
+        "Link": [],
+        "Method":
+        [
+            {
+                "Name": "runOutput",
+                "Params": {}
+            }
+        ]
+        },
+        {
+        "Name": "JsonFile",
+        "Type": "IO",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "An IO plugin to handle simple JSON files.",
+        "Link": [],
+        "Method":
+        [
+            {
+                "Name": "runOutput",
+                "Params":
+                {
+                    "EncodeWithBase64": "False"
+                }
+            }
+        ]
+        },
+        {
+        "Name": "Quizlet",
+        "Type": "IO",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "An IO plugin that interacts with Quizlet web services.",
+        "Link": ["https://quizlet.com"],
+        "Method":
+        [
+            {
+                "Name": "runOutput",
+                "Params":
+                {
+                    "Title": "Learn Indonesian: Talk about a house!",
+                    "Credentials": "Default",
+                    "L1": "en",
+                    "L2": "id",
+                    "URL": "https://api.quizlet.com/2.0"
+                }
+            }
+        ]
+        },
+        {
+        "Name": "TextFile",
+        "Type": "IO",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "An IO plugin to handle simple text files.",
+        "Link": [],
+        "Method":
+        [
+            {
+                "Name": "runInput",
+                "Params": {}
+            },
+            {
+                "Name": "runOutput",
+                "Params": {}
+            }
+        ]
+        },
+        {
+        "Name": "Wikipedia",
+        "Type": "IO",
+        "Version": "1.0.0",
+        "Author" : "Wikipedia and Sam Brightman",
+        "Description": "An IO plugin to interact with the Wikipedia API.",
+        "Link": ["https://www.wikipedia.org/",
+                 "https://github.com/sambrightman/wiki-api"],
+        "Method":
+        [
+            {
+                "Name": "runSearchInput",
+                "Params":
+                {
+                    "SearchFor": "Eclipse",
+                    "IncludeContent": "False",
+                    "IncludeHeading": "True",
+                    "IncludeSummary": "True",
+                    "IncludeURL": "True",
+                    "LimitResultsTo": "5",
+                    "Locale": "en"
+                }
+            }
+        ]
+        },
+        {
+        "Name": "XmlFile",
+        "Type": "IO",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "An IO plugin to handle simple XML files.",
+        "Link": [],
+        "Method":
+        [
+            {
+                "Name": "runOutput",
+                "Params":
+                {
+                    "EncodeWithBase64": "False"
+                }
+            }
+        ]
+        },
+        {
+        "Name": "YouTube",
+        "Type": "IO",
+        "Version": "1.0.0",
+        "Author" : "Google Inc.",
+        "Description": "An IO plugin to handle simple XML files.",
+        "Link": ["https://developers.google.com/youtube/"],
+        "Method":
+        [
+            {
+                "Name": "runInputUsingLocalFile",
+                "Params":
+                {
+                }
+            },
+            {
+                "Name": "runInputUsingRemoteFile",
+                "Params":
+                {
+                    "CaptionID": "",
+                    "CaptionName": "A Cocoscats Generated Caption",
+                    "Format": "srt",
+                    "IsDraft": "False",
+                    "L1": "en",
+                    "RefreshOAUTH2AccessToken": "False"
+                }
+            },
+            {
+                "Name": "runOutputUsingLocalFile",
+                "Params":
+                {
+                }
+            },
+            {
+                "Name": "runOutputUsingRemoteFile",
+                "Params":
+                {
+                    "CaptionID": "",
+                    "CaptionName": "A Cocoscats Generated Caption",
+                    "Format": "srt",
+                    "IsDraft": "False",
+                    "L1": "en",
+                    "RefreshOAUTH2AccessToken": "False"
+                }
+            }
+        ]
+        },
+        {
+        "Name": "Nltk",
+        "Type": "Analyzer",
+        "Version": "1.0.0",
+        "Author" : "NLTK",
+        "Description": "An analyzer plugin that uses the NLTK library.",
+        "Links": ["http://www.nltk.org/"],
+        "Method":
+        [
+            {
+                "Name": "runSingleWords",
+                "Params":
+                {
+                    "MinCharLength": "2",
+                    "Percentage": "25",
+                    "POS": ["ADJ", "CONJ", "NOUN", "PRON", "VERB"]
+                }
+            }
+        ]
+        },
+        {
+        "Name": "Azure",
+        "Type": "Translator",
+        "Version": "1.0.0",
+        "Author" : "Microsoft",
+        "Description": "A translation plugin that uses Microsoft's Azure Cloud Translator.",
+        "Links": ["https://azure.microsoft.com"],
+        "Method":
+        [
+            {
+                "Name": "runTranslate",
+                "Params":
+                {
+                    "Credentials": "Default",
+                    "L1": "en",
+                    "L2": "id",
+                    "SearchOneByOne": "False"
+                }
+            }
+        ]
+        },
+        {
+        "Name": "Browser",
+        "Type": "Demo",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "A simple browser demo.",
+        "Links": [],
+        "Method":
+        [
+            {
+                "Name": "run",
+                "Params":
+                {
+                    "Application": "Default",
+                    "Source": "Target"
+                }
+            }
+        ]
+        },
+        {
+        "Name": "Flashcard",
+        "Type": "Demo",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "A simple web-based flashcard demo.",
+        "Links": [],
+        "Method":
+        [
+            {
+                "Name": "run",
+                "Params":
+                {
+                }
+            }
+        ]
+        },
+        {
+        "Name": "TextEditor",
+        "Type": "Demo",
+        "Version": "1.0.0",
+        "Author" : "Cocoscats",
+        "Description": "A simple text editor demo.",
+        "Links": [],
+        "Method":
+        [
+            {
+                "Name": "run",
+                "Params":
+                {
+                    "Application": "Default",
+                    "Source": "Target"
+                }
+            }
+        ]
+        }
+    ]
+}
