@@ -30,6 +30,8 @@ class Browser(Interface):
             path = File.setContentToTempFile(content["Content"].html)
         elif source == "path" or source == "target":
             path = self.getWorkflowTarget()
+        elif source == "source":
+            path = self.getWorkflowSource()
         if self.getPluginParamValue("Application").lower() == "default":
             if self.__isWindows():
                 cmd = "start {0}".format(path)

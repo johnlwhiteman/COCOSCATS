@@ -14,7 +14,6 @@ $(document).ready(function() {
             L1L2 = L1L2.replace(/}/g,"</span>}", L1L2);
             $("#csTitle").html(response["Title"]);
             $("#csDescription").html(response["Description"]);
-
             $("#csL1L2").html(L1L2);
             $("#csL1").html(response["L1"]);
             $("#csL2").html(response["L2"]);

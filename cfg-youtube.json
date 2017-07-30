@@ -24,8 +24,8 @@
         "RefreshCertificate": "False",
         "RefreshPassword": "False",
         "Reloader": "False",
-        "UseAuthentication": "False",
-        "UseHttps": "False"
+        "UseAuthentication": "True",
+        "UseHttps": "True"
     },
     "Workflow":
     {
@@ -63,7 +63,7 @@
         {
             "Plugin": ["Browser"],
             "Method": ["run"],
-            "Enable": "False"
+            "Enable": "True"
         }
     },
     "Plugin":
@@ -209,7 +209,7 @@
                     "Format": "srt",
                     "IsDraft": "False",
                     "L1": "en",
-                    "RefreshOAUTH2AccessToken": "True"
+                    "RefreshOAUTH2AccessToken": "False"
                 }
             },
             {
@@ -227,7 +227,7 @@
                     "Format": "srt",
                     "IsDraft": "False",
                     "L1": "en",
-                    "RefreshOAUTH2AccessToken": "True"
+                    "RefreshOAUTH2AccessToken": "False"
                 }
             }
         ]
@@ -287,7 +287,7 @@
                 "Params":
                 {
                     "Application": "Default",
-                    "Source": "Target"
+                    "Source": "Source"
                 }
             }
         ]

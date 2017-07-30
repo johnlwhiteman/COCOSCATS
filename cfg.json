@@ -209,7 +209,7 @@
                     "Format": "srt",
                     "IsDraft": "False",
                     "L1": "en",
-                    "RefreshOAUTH2AccessToken": "True"
+                    "RefreshOAUTH2AccessToken": "False"
                 }
             },
             {
@@ -227,7 +227,7 @@
                     "Format": "srt",
                     "IsDraft": "False",
                     "L1": "en",
-                    "RefreshOAUTH2AccessToken": "True"
+                    "RefreshOAUTH2AccessToken": "False"
                 }
             }
         ]

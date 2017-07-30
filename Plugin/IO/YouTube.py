@@ -59,21 +59,28 @@ https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
         parser = argparse.ArgumentParser(parents=[argparser])
         parser.add_argument("--videoid",
             help="ID for video for which the caption track will be uploaded.", default=self.__PARAMS["URL"]["VideoID"])
-        # The "name" option specifies the name of the caption trackto be used.
         parser.add_argument("--name", help="Caption track name", default=self.__PARAMS["CaptionName"])
-        # The "file" option specifies the binary file to be uploaded as a caption track.
         parser.add_argument("--file", help="Captions track file to upload")
-        # The "language" option specifies the language of the caption track to be uploaded.
         parser.add_argument("--language", help="Caption track language", default=self.__PARAMS["L1"])
-        # The "captionid" option specifies the ID of the caption track to be processed.
         parser.add_argument("--captionid", help="Required; ID of the caption track to be processed")
-        # The "action" option specifies the action to be processed.
         parser.add_argument("--action", help="Action", default="all")
+
+        # Using argsparse is dumb idea in a class but it's not my design. I need to include main client's args
+        # until I can figure a better way here to do this here
+        parser.add_argument("-c", "--cfg", metavar="'cfg'", type=str, default="cfg.json",
+                             help="JSON configuration file")
+        parser.add_argument("-C", "--cli", action="store_true",
+                            help="Run command line interface")
+        parser.add_argument("-W", "--web", action="store_true",
+                             help="Run web interface")
+
         self.__ARGS_PARSER = parser
-        try:
-            self.get_authenticated_service(self.__ARGS_PARSER.parse_known_args())
-        except Exception as e:
-            raise Exception("Error: Can't authenticate to YouTube: {0}".format(e))
+
+        if Text.isTrue(self.__PARAMS["RefreshOAUTH2AccessToken"]):
+            File.delete(self.__CLIENT_OAUTH2_ACCESS_TOKEN_FILE)
+
+        if not File.exists(self.__CLIENT_OAUTH2_ACCESS_TOKEN_FILE):
+            self.generateOAUTH2AccessToken()
 
     def delete_caption(self, youtube, caption_id):
         youtube.captions().delete(
@@ -99,6 +106,11 @@ https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
         captions = self.download_caption().decode()
         File.setContent(self.__DOWNLOADED_PATH, captions)
         return captions
+
+    def generateOAUTH2AccessToken(self):
+        args = self.__ARGS_PARSER.parse_args()
+        youtube = self.get_authenticated_service(args)
+
 
     def get_authenticated_service(self, args):
         flow = flow_from_clientsecrets(self.__CLIENT_SECRETS_FILE,

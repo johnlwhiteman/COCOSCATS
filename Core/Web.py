@@ -80,9 +80,6 @@ class Web(object):
             server = WebSecurity(host=Web.cocoscats.cfg["Web"]["Host"],
                                  port=Web.cocoscats.cfg["Web"]["Port"])
 
-            server.setupPassword()
-            server.setupCertificate()
-
             threading.Thread(target=bottle.run,
                 kwargs=dict(
                 app = SessionMiddleware(bottle.app(), sessionOptions),
@@ -262,6 +259,19 @@ class WebApp(object):
         body = """{0}{1}""".format(navigation, editor)
         return "{0}{1}{2}".format(header, body, footer)
 
+    @bottle.route("/Demo")
+    def __Demo():
+        WebApp.checkAuthentication()
+        header = WebApp.getHeader("Demo")
+        footer = WebApp.getFooter()
+        if not Text.isTrue(Web.cocoscats.cfg["Workflow"]["Demo"]["Enable"]):
+            return {"Error": True, "Message": "No demo found"}
+        pluginName = Web.cocoscats.cfg["Workflow"]["Demo"]["Plugin"][0]
+        pluginMethod = Web.cocoscats.cfg["Workflow"]["Demo"]["Method"][0]
+        content = Web.cocoscats.runDemo(pluginName, pluginMethod)
+        body = "Running demo"
+        return """  """.format(header, body, footer)
+
     @bottle.route("/Input")
     @bottle.route("/Input/<action>", method=["GET","POST"])
     def __runInput(action=None):
@@ -354,7 +364,13 @@ class WebApp(object):
         header = WebApp.getHeader("View")
         footer = WebApp.getFooter(script)
         navigation = WebApp.getNavigation("View", 4, "View")
-        replace = {"projectID": Web.cocoscats.getProjectID()}
+        demoHTML = ""
+        if Text.isTrue(Web.cocoscats.cfg["Workflow"]["Demo"]["Enable"]):
+            demoHTML = bottle.template("Web/Tpl/Demo.tpl", {})
+        replace = {
+            "projectID": Web.cocoscats.getProjectID(),
+            "runDemo": demoHTML
+            }
         body = """{0}{1}""".format(navigation,
                bottle.template("Web/Tpl/View.tpl", replace))
         return "{0}{1}{2}".format(header, body, footer)
