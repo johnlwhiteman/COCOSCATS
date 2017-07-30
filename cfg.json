@@ -63,7 +63,7 @@
         {
             "Plugin": ["TextEditor"],
             "Method": ["run"],
-            "Enable": "False"
+            "Enable": "True"
         }
     },
     "Plugin":

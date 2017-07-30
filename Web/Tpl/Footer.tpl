@@ -7,7 +7,7 @@
 <hr/>
 Contextually Correct Scatter Substitution (CoCoScatS)
 <br/>
-A Content Generation Framework for Foreign Language Learning Plebes
+<i>A Mostly-Automated Content Generation Framework for Foreign Language Learning Plebes</i>
 <br/>
 Copyright © {{year}}
 <hr/>

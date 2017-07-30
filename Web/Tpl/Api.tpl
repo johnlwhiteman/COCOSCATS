@@ -30,6 +30,12 @@ You can call these APIs via the web server.
 </tr><tr>
 <td>Get 'Output' plugins only</td>
 <td><a href="/Api/GetPlugins/Output">GetPlugins/Output</a></td>
+</tr><tr>
+<td>Get 'Demo' plugins only</td>
+<td><a href="/Api/GetPlugins/Output">GetPlugins/Demo</a></td>
+
+
+
 </tr>
 </table>
-</dvi>
+</div>

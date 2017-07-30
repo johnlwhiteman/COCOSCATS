@@ -1,4 +1,6 @@
-# Contextually Correct Scatter Substitution (COCOSCATS) #
+# Contextually Correct Scatter Substitution (CoCoScatS)
+### *A Mostly-Automated Content Generation Framework for Foreign Language Learning Plebes*
+
 
 John L. Whiteman
 
@@ -22,8 +24,8 @@ The translations are word-for-word without regard to proper grammar structure in
 ## Installation
 
 * Download and install Python (see dependencies above)
-* *git clone https://github.com/johnlwhiteman/Cocoscats.git*
-* *cd Cocoscats*
+* *git clone https://github.com/johnlwhiteman/CoCoScatS*
+* *cd CoCoScatS*
 * *python install*
 
 ## Execution
