@@ -136,7 +136,7 @@ class Security():
         return pbkdf2_sha512.encrypt(password, rounds=999999, salt_size=64)
 
     @staticmethod
-    def passwordExists():
+    def hasPasswordFile():
         return File.exists(Security.__passwordPath)
 
     @staticmethod

@@ -7,6 +7,7 @@
 <td>|</td>
 <td><a href="/Docs">Docs</a></td>
 <td>|</td>
-<td><a href="/Login">{{!LoginStatus}}</a></td>
+<td><a href="/Admin">Admin</a></td>
+<td>{{!LoginStatus}}</td>
 </tr>
 </table>

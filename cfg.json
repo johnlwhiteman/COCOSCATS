@@ -24,7 +24,7 @@
         "RefreshCertificate": "False",
         "RefreshPassword": "False",
         "Reloader": "False",
-        "UseAuthentication": "False",
+        "UseAuthentication": "True",
         "UseHttps": "False"
     },
     "Workflow":

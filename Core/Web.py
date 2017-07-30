@@ -48,23 +48,6 @@ class WebSecurity(bottle.ServerAdapter):
             server_side = True)
         srv.serve_forever()
 
-    def setupCertificate(self):
-        if not Text.isTrue(Web.cocoscats.cfg["Web"]["UseHttps"]):
-            return
-        if Text.isTrue(Web.cocoscats.cfg["Web"]["RefreshCertificate"]):
-            Security.deleteCertsAndKeys()
-        if not Security.certsAndKeysExist():
-            print("HELLO")
-            Security.createCertsAndKeys(Web.cocoscats.cfg["Web"]["Host"])
-
-    def setupPassword(self):
-        if not Text.isTrue(Web.cocoscats.cfg["Web"]["UseAuthentication"]):
-            return
-        if Text.isTrue(Web.cocoscats.cfg["Web"]["RefreshPassword"]):
-            Security.deletePassword()
-        if not Security.passwordExists():
-            Security.createPassword()
-
 class Web(object):
 
     cocoscats = NotImplemented
@@ -82,8 +65,12 @@ class Web(object):
             "session.cookie_expires": 300,
             "session.auto": True
         }
+
         if Text.isTrue(Web.cocoscats.cfg["Web"]["Debug"]):
             WebSecurity.getSubresourceIntegrityHashes(True)
+
+        Web.setupPassword()
+        Web.setupCertificate()
 
         if Web.useHttps:
             Web.scheme = "https"
@@ -92,8 +79,10 @@ class Web(object):
                                                 Web.cocoscats.cfg["Web"]["Port"])
             server = WebSecurity(host=Web.cocoscats.cfg["Web"]["Host"],
                                  port=Web.cocoscats.cfg["Web"]["Port"])
-            server.setupCertificate()
+
             server.setupPassword()
+            server.setupCertificate()
+
             threading.Thread(target=bottle.run,
                 kwargs=dict(
                 app = SessionMiddleware(bottle.app(), sessionOptions),
@@ -123,6 +112,25 @@ class Web(object):
                 if webbrowser.get(client).open(Web.url):
                     break
 
+    @staticmethod
+    def setupCertificate():
+        if not Text.isTrue(Web.cocoscats.cfg["Web"]["UseHttps"]):
+            return
+        if Text.isTrue(Web.cocoscats.cfg["Web"]["RefreshCertificate"]):
+            Security.deleteCertsAndKeys()
+        if not Security.certsAndKeysExist():
+            Security.createCertsAndKeys(Web.cocoscats.cfg["Web"]["Host"])
+
+    @staticmethod
+    def setupPassword():
+        if not Web.useAuthentication:
+            return
+        if Text.isTrue(Web.cocoscats.cfg["Web"]["RefreshPassword"]):
+            Security.deletePassword()
+        if not Security.hasPasswordFile():
+            Security.createPassword()
+
+
 class WebApp(object):
 
     inputTainted = False
@@ -134,7 +142,7 @@ class WebApp(object):
     def checkAuthentication():
         if not Web.useAuthentication:
             return
-        if not Text.isTrue(WebApp.__getSession("Authenticated")):
+        if not WebApp.__isAuthenticated():
             WebApp.__redirect("/Login")
 
     @staticmethod
@@ -160,7 +168,6 @@ class WebApp(object):
         }
         replaceMenu = {"LoginStatus": ""}
         replaceTitle = {"title": title}
-
         if Web.useAuthentication:
             if Text.isTrue(WebApp.__getSession("Authenticated")):
                 replaceMenu["LoginStatus"] = """ | <a href="/Logout">Logout</a>"""
@@ -215,6 +222,10 @@ class WebApp(object):
         if name not in session:
             return None
         return session[name]
+
+    @staticmethod
+    def __isAuthenticated():
+        return Text.isTrue(WebApp.__getSession("Authenticated"))
 
     @staticmethod
     def __redirect(path, delay=None):
@@ -386,8 +397,29 @@ class WebApp(object):
 
     @bottle.route("/Admin")
     @bottle.route("/Administration")
-    def __showAdministration():
+    def __showAdmin():
         WebApp.checkAuthentication()
+        replace = {
+            "Browser": Web.cocoscats.cfg["Web"]["Browser"][0],
+            "Debug": Web.cocoscats.cfg["Web"]["Debug"],
+            "Host": Web.cocoscats.cfg["Web"]["Host"],
+            "IsAuthenticated": WebApp.__isAuthenticated(),
+            "Port": Web.cocoscats.cfg["Web"]["Port"],
+            "RefreshCertificate": Web.cocoscats.cfg["Web"]["RefreshCertificate"],
+            "RefreshPassword": Web.cocoscats.cfg["Web"]["RefreshPassword"],
+            "Reloader": Web.cocoscats.cfg["Web"]["Reloader"],
+            "UseAuthentication": Web.cocoscats.cfg["Web"]["UseAuthentication"],
+            "UseHttps": Web.cocoscats.cfg["Web"]["UseHttps"],
+            "DatabaseDebug": Web.cocoscats.cfg["Database"]["Debug"],
+            "DatabaseEnable": Web.cocoscats.cfg["Database"]["Enable"],
+            "DatabaseName": Web.cocoscats.cfg["Database"]["Name"],
+            "DatabaseRebuild": Web.cocoscats.cfg["Database"]["Rebuild"]
+            }
+        return """{0}{1}{2}""".format(
+            WebApp.getHeader("Adminstration"),
+            bottle.template("Web/Tpl/Admin.tpl", replace),
+            WebApp.getFooter())
+
         session = bottle.request.environ.get('beaker.session')
         body  = """
 <h2>Session Variables</h2>
@@ -420,35 +452,40 @@ class WebApp(object):
     @bottle.route("/")
     @bottle.route("/<path>")
     def __showIndex(path="index.html"):
-        #WebApp.__checkAuthentication()
-        #return bottle.static_file(path, root="Web/html")
-        return """{0}{1}{2}""".format(
-            WebApp.getHeader("Welcome to Cocoscats"),
-            bottle.template("Web/Tpl/Index.tpl", {}),
-            WebApp.getFooter())
+        if not Web.useAuthentication or WebApp.__isAuthenticated():
+            return """{0}{1}{2}""".format(
+                WebApp.getHeader("Welcome to Cocoscats"),
+                bottle.template("Web/Tpl/Index.tpl", {}),
+                WebApp.getFooter())
+        else:
+            return """{0}{1}{2}""".format(
+                WebApp.getHeader("Welcome to Cocoscats"),
+                bottle.template("Web/Tpl/Login.tpl", {}),
+                WebApp.getFooter())
 
     @bottle.route("/Login", method=["GET","POST"])
     def __showLogin():
         p = bottle.request.forms.get("password")
         if p is not None:
-            if Security.verifyPasswordByFile(p, "./Security/Password.json"):
+            passwordPath = "{0}/Password.json".format(Framework.getVaultDir())
+            if Security.verifyPasswordByFile(p, passwordPath):
                 bottle.request.environ.get('beaker.session').invalidate()
                 WebApp.__setSession("Authenticated", "True")
-                WebApp.__redirect("/Input")
+                WebApp.__redirect("/")
                 return ""
             else:
                 WebApp.__setSession("authenticated", "False")
         return """{0}{1}{2}""".format(
-            WebApp.getHeader("Login"),
+            WebApp.getHeader("Welcome to Cocoscats"),
             bottle.template("Web/Tpl/Login.tpl", {}),
             WebApp.getFooter())
 
     @bottle.route("/Logout")
     def __showLogout():
         bottle.request.environ.get('beaker.session').invalidate()
-        WebApp.__redirect("/", 2)
+        WebApp.__redirect("/", 1)
         return """{0}{1}{2}""".format(
-            WebApp.getHeader("Login"),
+            WebApp.getHeader("Goodbye..."),
             bottle.template("Web/Tpl/Logout.tpl", {}),
             WebApp.getFooter())
 
@@ -486,10 +523,10 @@ class WebApi(WebApp):
     @bottle.route("/Api/GetProject/<projectID>", method=["GET","POST"])
     def getProject(projectID=None):
         if projectID is None:
-            return "You need to specify a project ID"
+            return {"Error": True, "Message": "You need to specify a project ID"}
         if WebApi.__exists(projectID):
             return WebApi.__run(Database.getProject, projectID)
-        return "Project ID does not exist: {0}".format(projectID)
+        return {"Error": True, "Message": "Project ID does not exist: {0}".format(projectID)}
 
     @bottle.route("/Api/GetProjectDetails", method=["GET","POST"])
     @bottle.route("/Api/GetProjectDetails/<projectID>", method=["GET","POST"])
@@ -498,4 +535,5 @@ class WebApi(WebApp):
             return WebApi.__run(Database.getAllProjectDetails)
         if WebApi.__exists(projectID):
             return WebApi.__run(Database.getProjectDetails, projectID)
-        return "Project ID does not exist: {0}".format(projectID)
+        return {"Error": True, "Message": "Project ID does not exist: {0}".format(projectID)}
+

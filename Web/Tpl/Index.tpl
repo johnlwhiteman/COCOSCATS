@@ -1,7 +1,7 @@
 
 <table>
 <tr>
-<td><a href="/Input">Start Here</a></td>
-<td><img src="/Web/Img/cocoscats.png" height="45" width="45" alt="Squirrel Power"></td>
+<td><a href="/Input"><h3>Start Here!</h3></a></td>
+<td><img src="/Web/Img/cocoscats.png" height="69" width="69" alt="Squirrely"></td>
 </tr>
 </table>

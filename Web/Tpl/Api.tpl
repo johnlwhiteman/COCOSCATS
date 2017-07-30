@@ -1,19 +1,20 @@
 
+<div class="csDiv">
 You can call these APIs via the web server.
 
 <h2>Project Results</h2>
-<table>
+<table align="center">
 <tr>
 <td>Get project</td>
 <td><a href="/Api/GetProject">GetProject/&lt;projectID&gt;</a></td>
 </tr><tr>
 <td>Get project metadata</td>
-<td><a href="/Api/GetProjectDetails">GetProjectDetails/&lt;projectID&gt;</a></td>
+<td><a href="/Api/GetProjectDetails">[GetProjectDetails/&lt;projectID&gt;]</a></td>
 </tr>
 </table>
 
 <h2>Cocoscats Framework</h2>
-<table>
+<table align="center">
 <tr>
 <td>Get all plugins</td>
 <td><a href="/Api/GetPlugins">GetPlugins</a></td>
@@ -31,3 +32,4 @@ You can call these APIs via the web server.
 <td><a href="/Api/GetPlugins/Output">GetPlugins/Output</a></td>
 </tr>
 </table>
+</dvi>

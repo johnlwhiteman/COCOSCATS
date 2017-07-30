@@ -1,8 +1,7 @@
 
 <div class="csDiv">
-<h2>Login</h2>
 <form action="/Login" method="post">
-<table>
+<table align="center">
 <tr>
 <td>Password:</td>
 <td><input type="password" name="password" autocomplete="off" autofocus></td>
