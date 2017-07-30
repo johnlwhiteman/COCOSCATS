@@ -33,10 +33,6 @@ textarea {
 }
 
 .csDiv {
-  margin-top: 10px;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  margin-left: 10px;
   font-family: inherit;
   font-size: inherit;
   font-style: inherit;
@@ -52,6 +48,10 @@ textarea {
   font-weight: bold;
 }
 
+.csHeader {
+  text-align: center;
+}
+
 .csL1 {
   color: inherit;
   font-family: inherit;
@@ -62,7 +62,7 @@ textarea {
 }
 
 .csL2 {
-  color: blue;
+  color: green;
   font-family: inherit;
   font-size: inherit;
   font-style: normal;
@@ -78,10 +78,16 @@ textarea {
   font-weight: inherit;
 }
 
+.csText {
+ position:relative;
+ text-align:left;
+}
+
 #csFooter {
   color: grey;
-  text-align: center;
   font-style: italic;
+  text-align: center;
+  margin-top: 25px
 }
 
 #csNavTitle {

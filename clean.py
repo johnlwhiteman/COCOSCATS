@@ -30,10 +30,10 @@ def deleteProtected(cfgPath):
         for path in [
             "./Database/{0}.db".format(cfg.cfg["Database"]["Name"]),
             "./Database/CocoscatsTest.db",
-            "./Security/Certificate.pem",
-            "./Security/Password.json",
-            "./Security/PrivateKey.pem",
-            "./Security/PublicKey.pem"]:
+            "./Vault/Certificate.pem",
+            "./Vault/Password.json",
+            "./Vault/PrivateKey.pem",
+            "./Vault/PublicKey.pem"]:
             File.delete(path)
     except Exception as e:
         Error.handleException(e, True)

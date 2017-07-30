@@ -8,8 +8,10 @@ from Core.Error import Error
 class File():
 
     @staticmethod
-    def copy(src, tgt):
+    def copy(src, tgt, mkdirs=False):
         try:
+            if mkdirs:
+                Directory.make(File.getDirectory(tgt))
             copyfile(src, tgt)
         except IOError as e:
             Error.handleException(e, True, True)

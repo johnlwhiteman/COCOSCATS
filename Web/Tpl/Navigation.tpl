@@ -1,5 +1,5 @@
 
-<h2>Step {{!step}}: {{!title}}</h2>
+<h3>Step {{!step}}: {{!pluginName}}()</h3>
 <table>
 <tr>
 <td>{{!Input}}</td>

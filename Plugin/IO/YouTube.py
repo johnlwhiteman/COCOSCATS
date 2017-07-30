@@ -308,7 +308,6 @@ class YouTube(Interface):
         rawContent = api.getDownloadedCaptions()
         content = self.__parseContentForOutputSRT(rawContent)
         api.saveTranslatedCaptions(content)
-        print(content)
         api.updateCaption()
         self.setOutputContent(content)
         return content

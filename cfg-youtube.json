@@ -1,7 +1,7 @@
 {
-    "ProjectID": "SimpleTextToText",
-    "Title": "Simple Text to Text",
-    "Description": "Uses a local text files for input and output",
+    "ProjectID": "MyProjectID",
+    "Title": "My Project's Title",
+    "Description": "My project's description.",
     "Database":
     {
         "Name": "Cocoscats",
@@ -31,9 +31,9 @@
     {
         "Input":
         {
-            "Plugin": "TextFile",
-            "Method": "runInput",
-            "Source": "./Test/house.txt",
+            "Plugin": "YouTube",
+            "Method": "runInputUsingRemoteFile",
+            "Source": "https://www.youtube.com/watch?v=KkvXcxRLzwk",
             "Edit": "False",
             "Debug": "False"
         },
@@ -53,15 +53,15 @@
         },
         "Output":
         {
-            "Plugin": "TextFile",
-            "Method": "runOutput",
-            "Target": "./Out/houseResults.txt",
+            "Plugin": "YouTube",
+            "Method": "runOutputUsingRemoteFile",
+            "Target": "./Out/captions.srt",
             "Edit": "False",
             "Debug": "False"
         },
         "Demo":
         {
-            "Plugin": ["TextEditor"],
+            "Plugin": ["Browser"],
             "Method": ["run"],
             "Enable": "False"
         }

@@ -6,3 +6,4 @@
 <link rel="stylesheet" href="/Web/Css/Cocoscats.css">
 {{meta}}{{css}}{{js}}</head>
 <body>
+<div align="center">

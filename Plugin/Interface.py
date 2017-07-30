@@ -108,7 +108,8 @@ class Interface(object):
 
     def setOutputContent(self, content):
         content = self.__setContent("outputPath", content)
-        File.copy(self.__frameworkParams["outputPath"], self.getWorkflowTarget())
+        path = self.getWorkflowTarget()
+        File.copy(self.__frameworkParams["outputPath"], path, mkdirs=True)
         return content
 
     def setTranslatorContent(self, content):

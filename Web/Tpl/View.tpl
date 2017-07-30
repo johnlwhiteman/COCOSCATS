@@ -1,14 +1,17 @@
 
-<div class="csDiv">
+
 <div class="csErrMsg" id="csErrMsg"></div>
-<div id="csProjectID"></div>
+<h3 class="csHeader">Title</h3>
 <div id="csTitle"></div>
+<h3 class="csHeader">ProjectID</h3>
+<div id="csProjectID">{{!projectID}}</div>
+<h3 class="csHeader">Description</h3.
 <div id="csDescription"></div>
-<div id="csL1L2"></div>
-<div id="csL1"></div>
-<div id="csL2"></div>
-<div id="csVocabulary"></div>
-<br/><br/><br/>
-<button type="button" id="btnGetProject">Get Project</button>
-<br/><br/>
-</div>
+<h3 class="csHeader">L1L2</h3>
+<div class="csText" id="csL1L2"></div>
+<h3 class="csHeader">L1</h3>
+<div class="csText" id="csL1"></div>
+<h3 class="csHeader">L2</h3>
+<div class="csText" id="csL2"></div>
+<h3 class="csHeader">Vocabulary</h3>
+<div class="csText" id="csVocabulary"></div>

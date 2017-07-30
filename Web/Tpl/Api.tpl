@@ -1,7 +1,7 @@
-<h2>The Cocoscats RESTful API</h2>
+
 You can call these APIs via the web server.
 
-<h2>Projects</h2>
+<h2>Project Results</h2>
 <table>
 <tr>
 <td>Get project</td>

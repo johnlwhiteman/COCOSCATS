@@ -159,20 +159,24 @@ class WebApp(object):
             "js": js
         }
         replaceMenu = {"LoginStatus": ""}
+        replaceTitle = {"title": title}
+
         if Web.useAuthentication:
             if Text.isTrue(WebApp.__getSession("Authenticated")):
                 replaceMenu["LoginStatus"] = """ | <a href="/Logout">Logout</a>"""
             else:
                 replaceMenu["LoginStatus"] = """ | <a href="/Login">Login</a>"""
-        return """{0}{1}""".format(
+        return """{0}{1}{2}""".format(
             bottle.template("Web/Tpl/Header.tpl", replaceHeader),
-            bottle.template("Web/Tpl/Menu.tpl", replaceMenu))
+            bottle.template("Web/Tpl/Menu.tpl", replaceMenu),
+            bottle.template("Web/Tpl/Title.tpl", replaceTitle))
 
     @staticmethod
-    def getNavigation(title, step):
+    def getNavigation(title, step, pluginName):
         replace = {
             "title": title,
             "step": step,
+            "pluginName": pluginName,
             "Input": "Input",
             "Analyzer": "Analyzer",
             "Translator": "Translator",
@@ -229,7 +233,8 @@ class WebApp(object):
         WebApp.checkAuthentication()
         header = WebApp.getHeader("Analyzer")
         footer = WebApp.getFooter()
-        navigation = WebApp.getNavigation("Analyzer", 2)
+        pluginName = Web.cocoscats.cfg["Workflow"]["Analyzer"]["Plugin"]
+        navigation = WebApp.getNavigation("Analyzer", 2, pluginName)
         path = Web.cocoscats.frameworkParams["analyzerPath"]
         if not action is None and action == "Save":
             File.setContent(path, bottle.request.forms.Content)
@@ -252,7 +257,8 @@ class WebApp(object):
         WebApp.checkAuthentication()
         header = WebApp.getHeader("Input")
         footer = WebApp.getFooter()
-        navigation = WebApp.getNavigation("Input", 1)
+        pluginName = Web.cocoscats.cfg["Workflow"]["Input"]["Plugin"]
+        navigation = WebApp.getNavigation("Input", 1, pluginName)
         path = Web.cocoscats.frameworkParams["inputPath"]
         if not action is None and action == "Save":
             File.setContent(path, bottle.request.forms.Content)
@@ -276,7 +282,8 @@ class WebApp(object):
         WebApp.checkAuthentication()
         header = WebApp.getHeader("Output")
         footer = WebApp.getFooter()
-        navigation = WebApp.getNavigation("Output", 4)
+        pluginName = Web.cocoscats.cfg["Workflow"]["Output"]["Plugin"]
+        navigation = WebApp.getNavigation("Output", 4, pluginName)
         path = Web.cocoscats.frameworkParams["outputPath"]
         if not action is None and action == "Save":
             File.setContent(path, bottle.request.forms.Content)
@@ -311,7 +318,8 @@ class WebApp(object):
         WebApp.checkAuthentication()
         header = WebApp.getHeader("Translator")
         footer = WebApp.getFooter()
-        navigation = WebApp.getNavigation("Translator", 3)
+        pluginName = Web.cocoscats.cfg["Workflow"]["Translator"]["Plugin"]
+        navigation = WebApp.getNavigation("Translator", 3, pluginName)
         path = Web.cocoscats.frameworkParams["translatorPath"]
         if not action is None and action == "Save":
             File.setContent(path, bottle.request.forms.Content)
@@ -334,9 +342,10 @@ class WebApp(object):
         script = """<script src="/Web/Js/CocoscatsView.js"></script>"""
         header = WebApp.getHeader("View")
         footer = WebApp.getFooter(script)
-        navigation = WebApp.getNavigation("View", 4)
+        navigation = WebApp.getNavigation("View", 4, "View")
+        replace = {"projectID": Web.cocoscats.getProjectID()}
         body = """{0}{1}""".format(navigation,
-               bottle.template("Web/Tpl/View.tpl", {}))
+               bottle.template("Web/Tpl/View.tpl", replace))
         return "{0}{1}{2}".format(header, body, footer)
 
     @bottle.get("/Web/Css/<path:re:.*\.css>")
@@ -394,7 +403,7 @@ class WebApp(object):
     def __showApi():
         WebApp.checkAuthentication()
         return """{0}{1}{2}""".format(
-            WebApp.getHeader("API"),
+            WebApp.getHeader("RESTful API"),
             bottle.template("Web/Tpl/Api.tpl", {}),
             WebApp.getFooter())
 
@@ -405,7 +414,7 @@ class WebApp(object):
         WebApp.checkAuthentication()
         return """{0}{1}{2}""".format(
             WebApp.getHeader("Documentation"),
-            bottle.template("Web/Tpl/Documentation.tpl", {}),
+            bottle.template("Web/Tpl/Doc.tpl", {}),
             WebApp.getFooter())
 
     @bottle.route("/")

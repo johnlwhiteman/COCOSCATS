@@ -5,8 +5,13 @@
 {{!scripts}}
 <div id="csFooter">
 <hr/>
-The Contextually Correct Scatter Substitution (COCOSCATS) Framework © {{year}}
+Contextually Correct Scatter Substitution (COCOSCATS)
+<br/>
+A Content Generation Framework for Foreign Language Learning Plebes
+<br/>
+Copyright © {{year}}
 <hr/>
+</div>
 </div>
 </body>
 </html>

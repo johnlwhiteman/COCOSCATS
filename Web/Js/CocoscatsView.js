@@ -1,6 +1,6 @@
 "use strict";
 $(document).ready(function() {
-    var projectID = "MyProjectID";
+    var projectID = $("#csProjectID").text().trim()
     $.ajax({
     type: "POST",
     url: "/Api/GetProject/" + projectID,
@@ -10,18 +10,19 @@ $(document).ready(function() {
             handleError(response["Message"]);
         } else {
             var L1L2 = response["L1L2"]
-            L1L2 = L1L2.replace(/{/g,"<span class=\"csL2\">", L1L2);
-            L1L2 = L1L2.replace(/}/g,"</span>", L1L2);
-            $("#csTitle").html("<h2>" + response["Title"] + "</h2>");
+            L1L2 = L1L2.replace(/{/g,"<span class=\"csL2\">{", L1L2);
+            L1L2 = L1L2.replace(/}/g,"</span>}", L1L2);
+            $("#csTitle").html(response["Title"]);
             $("#csDescription").html(response["Description"]);
-            $("#csL1L2").html("<h2>L1L2</h2>" + L1L2);
-            $("#csL1").html("<h2>L1</h2>" + response["L1"]);
-            $("#csL2").html("<h2>L2</h2>" + response["L2"]);
+
+            $("#csL1L2").html(L1L2);
+            $("#csL1").html(response["L1"]);
+            $("#csL2").html(response["L2"]);
             var wordCnt = response["VocabularyParsed"].length;
             if (wordCnt < 1) {
                 return;
             }
-            var html = "<table>\n<tr>\n";
+            var html = "<table align=\"center\">\n<tr>\n";
             html += "<th>L1</th><th>L2</th><th>PoS</th><th>Count</th>\n";
             for (var i = 0; i < wordCnt; i++) {
                 var word = response["VocabularyParsed"][i];
@@ -33,7 +34,7 @@ $(document).ready(function() {
                 html += "</tr>\n";
             }
             html += "</table>\n";
-            $("#csVocabulary").html("<h2>Vocabulary</h2><pre>" + html + "</pre>");
+            $("#csVocabulary").html("<pre>" + html + "</pre>");
         }
     },
     error: function(response, txtStatus, errMsg) {
