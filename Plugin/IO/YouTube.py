@@ -257,7 +257,7 @@ class YouTube(Interface):
         videoID = None
         L1 = "en"
         api = "http://www.youtube.com/api/timedtext?format={0}&lang={1}&v=".format(
-            subtitleFormat, L1)
+             subtitleFormat, L1)
         if not re.search(u.netloc, "www.youtube.com|www.youtu.be",  re.IGNORECASE):
             return None
         if re.search("/watch?", u.path, re.IGNORECASE):
@@ -306,7 +306,6 @@ class YouTube(Interface):
         rawContent = api.downloadCaption()
         content = self.__parseContentForInputSRT(rawContent)
         self.setInputContent(content)
-        del(api)
         return content
 
     def runOutputUsingLocalFile(self):

@@ -72,9 +72,8 @@ class Quizlet(Interface):
             "id": id,
             "url": quizletURL,
             "content": content,
-            "header": self.__getHeaders(),
-            "response": response.text,
-            "account": self.__queryMe()
+            "header": "",
+            "response": "Flashcard generation successful. Go check them out at: https://quizlet.com/latest"
         }
 
     def __deleteSet(self, ID):

@@ -1,7 +1,7 @@
 {
-    "ProjectID": "YouTube2YouTubeDemo",
-    "Title": "YouTube to YouTube Demo",
-    "Description": "A demo that downloads, modifies then upload a video's subtitles",
+    "ProjectID": "Text2HtmlDemo",
+    "Title": "Text to HTML Demo",
+    "Description": "A simple text to html workflow plugin demo",
     "Database":
     {
         "Name": "Cocoscats",
@@ -13,7 +13,6 @@
     {
         "Browser":
         [
-            "Default",
             "C:/Program Files (x86)/Mozilla Firefox/firefox.exe %s",
             "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s",
             "Default"
@@ -31,38 +30,38 @@
     {
         "Input":
         {
-            "Plugin": "YouTube",
-            "Method": "runInputUsingRemoteFile",
-            "Source": "https://www.youtube.com/watch?v=KkvXcxRLzwk",
-            "Edit": "False",
+            "Plugin": "TextFile",
+            "Method": "runInput",
+            "Source": "./In/demoText2Html.txt",
+            "Edit": "True",
             "Debug": "False"
         },
         "Analyzer":
         {
             "Plugin": "Nltk",
             "Method": "runSingleWords",
-            "Edit": "False",
+            "Edit": "True",
             "Debug": "False"
         },
         "Translator":
         {
             "Plugin": "Azure",
             "Method": "runTranslate",
-            "Edit": "False",
+            "Edit": "True",
             "Debug": "False"
         },
         "Output":
         {
-            "Plugin": "YouTube",
-            "Method": "runOutputUsingRemoteFile",
-            "Target": "./Out/captions.srt",
-            "Edit": "False",
+            "Plugin": "HtmlFile",
+            "Method": "runOutput",
+            "Target": "./Out/demoText2Html.html",
+            "Edit": "True",
             "Debug": "False"
         },
         "Demo":
         {
-            "Plugin": ["Browser"],
-            "Method": ["run"],
+            "Plugin": ["Browser", "TextEditor"],
+            "Method": ["run", "run"],
             "Enable": "True"
         }
     },
@@ -287,7 +286,7 @@
                 "Params":
                 {
                     "Application": "Default",
-                    "Source": "Source"
+                    "Source": "Target"
                 }
             }
         ]

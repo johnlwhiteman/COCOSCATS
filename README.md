@@ -28,6 +28,16 @@ The translations are word-for-word without regard to proper grammar structure in
 * *cd CoCoScatS*
 * *python install*
 
+## Warning!
+
+Before execution can take place you will need to establish accounts:
+
+* Microsoft Azure
+* Google YouTube
+* Quizlet
+
+All of them require secret keys for the generation access tokens via an OAUTH2 framework
+
 ## Execution
 
 You can run Cocoscats from the command line or as a web application.

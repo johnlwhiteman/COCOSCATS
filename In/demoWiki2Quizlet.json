@@ -1,7 +1,7 @@
 {
-    "ProjectID": "DemoText2Text",
-    "Title": "Text to Text Demo",
-    "Description": "A simple text to text workflow demot",
+    "ProjectID": "Wiki2QuizletDemo",
+    "Title": "Wikipedia to Quizlet Demo",
+    "Description": "A simple online Wikipedia API to an online Quizlet flashcard workflow demo",
     "Database":
     {
         "Name": "Cocoscats",
@@ -30,37 +30,37 @@
     {
         "Input":
         {
-            "Plugin": "TextFile",
-            "Method": "runInput",
-            "Source": "./In/demoText2Text.txt",
-            "Edit": "True",
+            "Plugin": "Wikipedia",
+            "Method": "runSearchInput",
+            "Source": "https://quizlet.com/latest",
+            "Edit": "False",
             "Debug": "False"
         },
         "Analyzer":
         {
             "Plugin": "Nltk",
             "Method": "runSingleWords",
-            "Edit": "True",
+            "Edit": "False",
             "Debug": "False"
         },
         "Translator":
         {
             "Plugin": "Azure",
             "Method": "runTranslate",
-            "Edit": "True",
+            "Edit": "False",
             "Debug": "False"
         },
         "Output":
         {
-            "Plugin": "TextFile",
+            "Plugin": "Quizlet",
             "Method": "runOutput",
-            "Target": "./Out/demoText2Text.txt",
-            "Edit": "True",
+            "Target": "./Out/demoWiki2Quizlet.txt",
+            "Edit": "False",
             "Debug": "False"
         },
         "Demo":
         {
-            "Plugin": ["TextEditor"],
+            "Plugin": ["Browser"],
             "Method": ["run"],
             "Enable": "True"
         }
@@ -113,7 +113,7 @@
                 "Name": "runOutput",
                 "Params":
                 {
-                    "Title": "Learn Indonesian: Talk about a house!",
+                    "Title": "CS6460 Cocoscats Final Presentation: Wiki Search for Educational Technology",
                     "Credentials": "Default",
                     "L1": "en",
                     "L2": "id",
@@ -155,7 +155,7 @@
                 "Name": "runSearchInput",
                 "Params":
                 {
-                    "SearchFor": "Eclipse",
+                    "SearchFor": "Educational Technology",
                     "IncludeContent": "False",
                     "IncludeHeading": "True",
                     "IncludeSummary": "True",
@@ -286,7 +286,7 @@
                 "Params":
                 {
                     "Application": "Default",
-                    "Source": "Target"
+                    "Source": "Source"
                 }
             }
         ]
